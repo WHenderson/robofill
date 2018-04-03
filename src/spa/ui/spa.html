@@ -1,5 +1,36 @@
-<div ref:root>
-    <h1>woooot</h1>
+<div ref:root class="ui padded container">
+    <form class="ui form">
+        <h1 class="ui dividing header">RoboFill: Select Script</h1>
+
+        <div class="field">
+            <label for="upload">Upload Script:</label>
+            <div class="ui fluid file input action">
+                <input type="text" readonly>
+                <input type="file" id="upload" name="files1" autocomplete="off" style="display:none">
+                <div class="ui button">
+                    Select...
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Select Script</label>
+            <div ref:script class="ui fluid search selection dropdown">
+                <input type="hidden" name="country">
+                <i class="dropdown icon"></i>
+                <div class="default text">Select Script</div>
+                <div class="menu">
+                    {{#each scripts as script, iscript}}
+                    <div class="item" data-value="{{iscript}}" data-text="{{script.name}} : {{script.author}} : {{script.description}}">
+                        <div>{{script.name}}</div>
+                        <div>{{script.author}}</div>
+                        <div>{{script.description}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script>
@@ -10,6 +41,10 @@
         },
         data() {
             return {
+                scripts: [
+                    { name: 'my name', author: 'my author', description: 'my description xxx' },
+                    { name: 'my lname', author: 'my mauthor', description: 'my ndescription zzz' }
+                ]
             }
         },
         computed: {
@@ -17,14 +52,29 @@
         oncreate() {
             const handshake = new Postmate.Model({
                 height: () => document.height || document.body.offsetHeight
-            })
+            });
             this.set({ handshake });
 
             handshake.then((parent) => {
                 this.set({ parent });
 
                 parent.emit('some-event', 'Woot Woot');
-            })
+            });
+
+            $(this.refs.script).dropdown({
+                fullTextSearch: true,
+                ignoreCase: true,
+                match: 'text',
+                onChange: (iscript, text, $choice) => {
+                    const scripts = this.get('scripts');
+                    const script = (iscript >= 0 && iscript < scripts.length) ? scripts[iscript] : undefined;
+                    this.set({ script });
+                }
+            });
+            this.observe('script', (script) => {
+                $(this.refs.script).dropdown('set selected', this.get('scripts').indexOf(script));
+            });
+
         },
         ondestroy() {
         },
