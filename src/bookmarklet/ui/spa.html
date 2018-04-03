@@ -69,6 +69,13 @@
             </div>
         </div>
 
+        <div class="field">
+            <div ref:bust class="ui checkbox">
+                <input type="checkbox" tabindex="0" class="hidden">
+                <label>Cache Bust</label>
+            </div>
+        </div>
+
         <a class="ui huge blue label" href="{{href}}">{{title}}</a>
     </form>
 
@@ -87,21 +94,23 @@
         data() {
             return {
                 title: "RoboFill",
-                target: "//localhost:8080/inject.js",
+                target: "//localhost:8080/inject/index.js",
                 libraries: [
-                    { target: '//code.jquery.com/jquery-latest.min.js', iff: 'typeof jQuery == "undefined"' },
-                    { target: '//cdn.jsdelivr.net/bluebird/3.5.0/bluebird.js', iff: 'typeof Promise == "undefined"' }
+                    { target: '', iff: '' }
+                    //{ target: '//code.jquery.com/jquery-latest.min.js', iff: 'typeof jQuery == "undefined"' },
+                    //{ target: '//cdn.jsdelivr.net/bluebird/3.5.0/bluebird.js', iff: 'typeof Promise == "undefined"' }
                 ],
                 format: 'pretty',
-                uniqueId: '5HMkkyxKb7fW9uXF'
+                uniqueId: '5HMkkyxKb7fW9uXF',
+                bust: true
             }
         },
         computed: {
-            href: (target, libraries, format, uniqueId) => {
+            href: (target, libraries, format, uniqueId, bust) => {
                 let script = `
                     (function () {
                         var s = document.createElement("script");
-                        s.src = "${target}";
+                        s.src = "${target}"${bust ? '+ "?" + (+new Date())' : ''};
                         ${uniqueId.trim() !== '' ? 's.id = "' + uniqueId + '";' : ''}
                         document.body.appendChild(s);
                     })
@@ -159,6 +168,16 @@
                    $radios.checkbox('uncheck');
                else
                    $radio.checkbox('check');
+            });
+
+            $(this.refs.bust)
+                .checkbox({
+                    onChange: function () {
+                        _this.set({ bust: $(_this.refs.bust).checkbox('is checked') });
+                    }
+                });
+            this.observe('bust', bust => {
+               $(this.refs.bust).checkbox(bust ? 'check' : 'uncheck');
             });
         },
         ondestroy() {
