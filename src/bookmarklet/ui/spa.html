@@ -4,15 +4,13 @@
         <h1 class="ui dividing header">Create a bookmarklet</h1>
 
         <div class="field">
-            <label>Title</label>
+            <label for="title">Title</label>
             <input id="title" type="text" placeholder="Bookmarklet Title" bind:value="title"/>
         </div>
 
         <div class="field">
-            <label>Url</label>
-            <div class="ui right labeled input">
-                <input type="text" placeholder="Target Url" bind:value="target"/>
-            </div>
+            <label for="url">Url</label>
+            <input id="url" type="text" placeholder="Target Url" bind:value="target"/>
         </div>
 
         <table class="ui celled table">
@@ -43,7 +41,7 @@
         </table>
 
         <div ref:format class="inline fields">
-            <label for="format">Format href:</label>
+            <label>Format href:</label>
             <div class="field">
                 <div ref:formatPretty class="ui radio checkbox">
                     <input type="radio" name="format" tabindex="0" class="hidden" value="pretty">
@@ -55,6 +53,19 @@
                     <input type="radio" name="format" tabindex="0" class="hidden" value="minify">
                     <label>Minified</label>
                 </div>
+            </div>
+        </div>
+
+        <div class="inline field">
+            <label for="id">Unique Id</label>
+            <div class="ui action input">
+                <input id="id" type="text" placeholder="Unique Id" bind:value="uniqueId">
+                <button class="ui icon button" on:click="onDelUniqueId(event)">
+                    <i class="trash icon"></i>
+                </button>
+                <button class="ui icon button" on:click="onNewUniqueId(event)">
+                    <i class="sync icon"></i>
+                </button>
             </div>
         </div>
 
@@ -81,19 +92,21 @@
                     { target: '//code.jquery.com/jquery-latest.min.js', iff: 'typeof jQuery == "undefined"' },
                     { target: '//cdn.jsdelivr.net/bluebird/3.5.0/bluebird.js', iff: 'typeof Promise == "undefined"' }
                 ],
-                format: 'pretty'
+                format: 'pretty',
+                uniqueId: '5HMkkyxKb7fW9uXF'
             }
         },
         computed: {
-            href: (target, libraries, format) => {
+            href: (target, libraries, format, uniqueId) => {
                 let script = `
                     (function () {
                         var s = document.createElement("script");
                         s.src = "${target}";
+                        ${uniqueId.trim() !== '' ? 's.id = "' + uniqueId + '";' : ''}
                         document.body.appendChild(s);
                     })
                 `;
-                for (const library of libraries) {
+                for (const [index, library] of libraries.entries()) {
                     if (library.target.trim() === '')
                         continue;
 
@@ -105,6 +118,7 @@
                                 if (${iff}) {
                                     s = document.createElement("script");
                                     s.src = "${library.target}";
+                                    ${uniqueId.trim() !== '' ? 's.id = "' + uniqueId + index + '";' : ''}
                                     s.onload = onload;
                                     document.body.appendChild(s);
                                 }
@@ -160,8 +174,23 @@
             },
             onDelLib(event, library) {
                 event.preventDefault();
+
                 const libraries = this.get('libraries');
                 this.set({ libraries: libraries.filter((l) => l !== library) });
+            },
+            onDelUniqueId(event) {
+                event.preventDefault();
+
+                this.set({ uniqueId: '' });
+            },
+            onNewUniqueId(event) {
+                event.preventDefault();
+
+                const val2chr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_';
+                const values = new Uint8Array(16);
+                window.crypto.getRandomValues(values);
+                const uniqueId = Array.prototype.slice.call(values).map(x => val2chr[x % val2chr.length]).join('');
+                this.set({ uniqueId: uniqueId })
             }
         },
         events: {
