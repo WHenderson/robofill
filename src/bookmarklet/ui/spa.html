@@ -1,0 +1,170 @@
+<div ref:root class="ui raised padded container segment">
+
+    <form class="ui form">
+        <h1 class="ui dividing header">Create a bookmarklet</h1>
+
+        <div class="field">
+            <label>Title</label>
+            <input id="title" type="text" placeholder="Bookmarklet Title" bind:value="title"/>
+        </div>
+
+        <div class="field">
+            <label>Url</label>
+            <div class="ui right labeled input">
+                <input type="text" placeholder="Target Url" bind:value="target"/>
+            </div>
+        </div>
+
+        <table class="ui celled table">
+            <thead>
+            <tr>
+                <th class="seven wide">Library Url</th>
+                <th class="seven wide" title="Only load library if this condition is met">Condition</th>
+                <th class="two wide">
+                    <button class="ui icon button" on:click="onAddLib(event)">
+                        <i class="plus icon"></i>
+                    </button>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each libraries as library}}
+            <tr>
+                <td><input type="text" placeholder="Target Url" bind:value="library.target"></td>
+                <td><input type="text" placeholder="N/A"  bind:value="library.iff"></td>
+                <td>
+                    <button class="ui icon button" on:click="onDelLib(event, library)">
+                        <i class="trash icon"></i>
+                    </button>
+                </td>
+            </tr>
+            {{/each}}
+            </tbody>
+        </table>
+
+        <div ref:format class="inline fields">
+            <label for="format">Format href:</label>
+            <div class="field">
+                <div ref:formatPretty class="ui radio checkbox">
+                    <input type="radio" name="format" tabindex="0" class="hidden" value="pretty">
+                    <label>Pretty</label>
+                </div>
+            </div>
+            <div class="field">
+                <div ref:formatMinify class="ui radio checkbox">
+                    <input type="radio" name="format" tabindex="0" class="hidden" value="minify">
+                    <label>Minified</label>
+                </div>
+            </div>
+        </div>
+
+        <a class="ui huge blue label" href="{{href}}">{{title}}</a>
+    </form>
+
+</div>
+
+<style>
+</style>
+
+<script>
+    import beautify from 'js-beautify';
+    import uglify from '../lib/uglify';
+
+    export default {
+        setup(Spa) {
+        },
+        data() {
+            return {
+                title: "RoboFill",
+                target: "//localhost:8080/inject.js",
+                libraries: [
+                    { target: '//code.jquery.com/jquery-latest.min.js', iff: 'typeof jQuery == "undefined"' },
+                    { target: '//cdn.jsdelivr.net/bluebird/3.5.0/bluebird.js', iff: 'typeof Promise == "undefined"' }
+                ],
+                format: 'pretty'
+            }
+        },
+        computed: {
+            href: (target, libraries, format) => {
+                let script = `
+                    (function () {
+                        var s = document.createElement("script");
+                        s.src = "${target}";
+                        document.body.appendChild(s);
+                    })
+                `;
+                for (const library of libraries) {
+                    if (library.target.trim() === '')
+                        continue;
+
+                    const iff = library.iff || "document.querySelectorAll('script[src=\"#{@url()}\"]').length == 0";
+
+                    script = `
+                        (function () {
+                            (function (onload) {
+                                if (${iff}) {
+                                    s = document.createElement("script");
+                                    s.src = "${library.target}";
+                                    s.onload = onload;
+                                    document.body.appendChild(s);
+                                }
+                                else
+                                    onload();
+                            })${script}
+                        })
+                    `;
+                }
+                script = `${script}()`;
+
+                switch (format) {
+                    case 'pretty':
+                        script = beautify(script);
+                        break;
+                    case 'minify':
+                        script = uglify.minify(script).code || '';
+                        break;
+                }
+
+                return `javascript:${script}`
+            }
+        },
+        oncreate() {
+            const _this = this;
+
+            $(this.refs.format)
+                .find('.ui.radio.checkbox')
+                .checkbox({
+                    onChecked: function () {
+                        _this.set({ format: $(this).val() });
+                    }
+                });
+            this.observe('format', format => {
+               const $radios = $(this.refs.format).find('.ui.radio.checkbox');
+               const $radio = $radios.filter((index, radio) => $(radio).find('input').val() === format);
+               if ($radio.length === 0)
+                   $radios.checkbox('uncheck');
+               else
+                   $radio.checkbox('check');
+            });
+        },
+        ondestroy() {
+        },
+        methods: {
+            onAddLib(event) {
+                event.preventDefault();
+
+                const libraries = this.get('libraries');
+                libraries.push({ target: '', iff: '' });
+
+                this.set({ libraries: libraries });
+            },
+            onDelLib(event, library) {
+                event.preventDefault();
+                const libraries = this.get('libraries');
+                this.set({ libraries: libraries.filter((l) => l !== library) });
+            }
+        },
+        events: {
+        }
+    };
+</script>

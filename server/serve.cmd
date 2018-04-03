@@ -1,0 +1,1 @@
+..\node_modules\.bin\http-server --cors -c-1 --ssl --cert .\certificates\cert.pem --key .\certificates\key.pem ..\dist
