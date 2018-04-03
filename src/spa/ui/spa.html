@@ -1,0 +1,36 @@
+<div ref:root>
+    <h1>woooot</h1>
+</div>
+
+<script>
+    import Postmate from 'postmate';
+
+    export default {
+        setup(AutoFill) {
+        },
+        data() {
+            return {
+            }
+        },
+        computed: {
+        },
+        oncreate() {
+            const handshake = new Postmate.Model({
+                height: () => document.height || document.body.offsetHeight
+            })
+            this.set({ handshake });
+
+            handshake.then((parent) => {
+                this.set({ parent });
+
+                parent.emit('some-event', 'Woot Woot');
+            })
+        },
+        ondestroy() {
+        },
+        methods: {
+        },
+        events: {
+        }
+    };
+</script>

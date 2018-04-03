@@ -1477,6 +1477,10 @@ portfinder@^1.0.13:
     debug "^2.2.0"
     mkdirp "0.5.x"
 
+postmate@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/postmate/-/postmate-1.4.1.tgz#6ce371bf70e0dcf1b43460400f54c054934ba265"
+
 preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
