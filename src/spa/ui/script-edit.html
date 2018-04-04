@@ -1,27 +1,68 @@
 <div class="ui form">
 
-    <div class="field">
-        <label>Name</label>
-        <input type="text" placeholder="Script Name" bind:value="name">
+    <div ref:tabs class="ui pointing secondary menu">
+        <a class="item active" data-tab="meta">Meta Data</a>
+        <a class="item" data-tab="script">Script</a>
     </div>
 
-    <div class="field">
-        <label>Author</label>
-        <input type="text" placeholder="Author Name" bind:value="author">
-    </div>
+    <div class="ui bottom attached tab segment active" data-tab="meta">
+        <div class="field">
+            <label>Name</label>
+            <input type="text" placeholder="Script Name" bind:value="name">
+        </div>
 
-    <div class="field">
-        <label>Description</label>
-        <textarea type="text" placeholder="Script Description" bind:value="description"/>
-    </div>
+        <div class="field">
+            <label>Author</label>
+            <input type="text" placeholder="Author Name" bind:value="author">
+        </div>
 
-    <div class="field">
-        <div class="ui label">
-            <i class="calendar icon"></i>
-            {{stamp.replace(/^(.*)T.*$/, '$1')}}
-            &nbsp;
-            <i class="clock icon"></i>
-            {{stamp.replace(/^.*T(.*)$/, '$1')}}
+        <div class="field">
+            <label>Description</label>
+            <textarea type="text" placeholder="Script Description" bind:value="description"/>
+        </div>
+
+        <div class="field">
+            <div class="ui label">
+                <i class="calendar icon"></i>
+                {{stamp.replace(/^(.*)T.*$/, '$1')}}
+                &nbsp;
+                <i class="clock icon"></i>
+                {{stamp.replace(/^.*T(.*)$/, '$1')}}
+            </div>
+        </div>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="script">
+        <div ref:add class="ui inverted menu">
+            <div class="ui dropdown item">
+                <i class="add icon"></i>
+                If
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    {{#each itemsByCategory(items, 'if') as item}}
+                    <a class="item" title="{{item.description}}">{{item.name}}</a>
+                    {{/each}}
+                </div>
+            </div>
+            <div class="ui dropdown item">
+                <i class="add icon"></i>
+                Input
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    {{#each itemsByCategory(items, 'input') as item}}
+                    <a class="item" title="{{item.description}}">{{item.name}}</a>
+                    {{/each}}
+                </div>
+            </div>
+            <div class="ui dropdown item">
+                <i class="add icon"></i>
+                Miscellaneous
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    {{#each itemsByNotCategories(items, ['if', 'input']) as item}}
+                    <a class="item" title="{{item.description}}">{{item.name}}</a>
+                    {{/each}}
+                </div>
+            </div>
         </div>
     </div>
 
@@ -46,6 +87,10 @@
 </div>
 
 <style>
+    .ui.attached.segment {
+        border: none;
+        padding: 0;
+    }
 </style>
 
 <script>
@@ -60,6 +105,46 @@
                 author: ''
             }
         },
+        helpers: {
+            items: [
+                {
+                    category: 'if',
+                    name: 'page',
+                    description: 'execute if specified page is active'
+                },
+                {
+                    category: 'input',
+                    name: 'text',
+                    description: 'enter text into input element'
+                },
+                {
+                    category: 'input',
+                    name: 'checkbox',
+                    description: 'set/unset specified checkbox element'
+                },
+                {
+                    category: 'input',
+                    name: 'radio',
+                    description: 'set specified radio element'
+                },
+                {
+                    category: 'mouse',
+                    name: 'click',
+                    description: 'click the specified element'
+                },
+                {
+                    category: 'navigate',
+                    name: 'next page',
+                    description: 'navigate to the next page'
+                }
+            ],
+            itemsByCategory(items, category) {
+                return items.filter(item => item.category === category);
+            },
+            itemsByNotCategories(items, categories) {
+                return items.filter(item => !categories.includes(item.category));
+            }
+        },
         computed: {
             script: (name, description, stamp, author) => {
                 return {
@@ -71,6 +156,11 @@
             }
         },
         oncreate() {
+            $(this.refs.tabs).find('.item')
+                .tab();
+
+            $(this.refs.add).find('.ui.dropdown')
+                .dropdown();
         },
         ondestroy() {
         },

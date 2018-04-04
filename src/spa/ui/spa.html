@@ -125,11 +125,11 @@
                     { name: 'my name', author: 'my author', description: 'my description xxx', stamp: (new Date()).toISOString() },
                     { name: 'my lname', author: 'my mauthor', description: 'my ndescription zzz', stamp: (new Date()).toISOString() }
                 ],
-                script: undefined,
-                upload: undefined,
-                edit: undefined,
-                editOverwrite: undefined,
-                uploadError: 'testing'
+                script: undefined, // script currently selected
+                upload: undefined, // script being uploaded
+                edit: undefined, // script being edited
+                editOverwrite: undefined, // script being overwritten (when saved)
+                uploadError: undefined // error during upload
             }
         },
         computed: {
