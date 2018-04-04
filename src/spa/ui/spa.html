@@ -1,90 +1,120 @@
 <div ref:root class="ui padded container">
-    <form class="ui form">
-        <h1 class="ui dividing header">RoboFill: Select Script</h1>
+    <h1 class="ui dividing header">RoboFill</h1>
 
-        <div class="field">
-            <label for="upload">Upload Script:</label>
-            <div class="ui fluid file input action">
-                <input type="text" readonly>
-                <input type="file" id="upload" name="files1" autocomplete="off" style="display:none">
-                <div class="ui button">
-                    Select...
-                </div>
-            </div>
-        </div>
-
-        <div class="field">
-            <label>Select Script</label>
-            <div ref:script class="ui fluid search selection dropdown">
-                <input type="hidden" name="country">
-                <i class="dropdown icon"></i>
-                <div class="default text">Select Script</div>
-                <div class="menu">
-                    {{#each scripts as script, iscript}}
-                    <div class="item" data-value="{{iscript}}" data-text="{{script.name}} : {{script.author}} : {{script.description}}">
-                        <div class="ui items">
-                            <div class="item">
-                                <div class="content">
-                                    <a class="header">{{script.name}}</a>
-                                    <div class="meta">
-                                        <span>{{script.stamp}}</span>
-                                    </div>
-                                    <div class="description">
-                                        <p>{{script.description}}</p>
-                                    </div>
-                                    <div class="extra">
-                                        <a class="ui teal label">{{script.author}}</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--
-                    <div class="item" data-value="{{iscript}}" data-text="{{script.name}} : {{script.author}} : {{script.description}}">
-                        <div>{{script.name}}</div>
-                        <div>{{script.author}}</div>
-                        <div>{{script.description}}</div>
-                    </div>
-                    -->
-                    {{/each}}
-                </div>
-            </div>
-        </div>
-    </form>
-
-    {{#if script}}
-    <div class="ui raised segment">
-        <div class="ui items">
-            <div class="item">
-                <div class="content">
-                    <a class="header">{{script.name}}</a>
-                    <div class="meta">
-                        <a class="ui label">
-                            <i class="calendar icon"></i>
-                            &nbsp;
-                            {{script.stamp.replace(/^(.*)T.*$/, '$1')}}
-                            &nbsp;
-                            &nbsp;
-                            <i class="clock icon"></i>
-                            &nbsp;
-                            {{script.stamp.replace(/^.*T(.*)$/, '$1')}}
-                        </a>
-                    </div>
-                    <div class="description">
-                        <p>{{script.description}}</p>
-                    </div>
-                    <div class="extra">
-                        <a class="ui teal ribbon label">{{script.author}}</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div ref:tabs class="ui top attached tabular menu">
+        <a class="item active" data-tab="select">Select</a>
+        <a class="item" data-tab="upload">Upload</a>
+        <a class="item" data-tab="edit">Create / Edit</a>
     </div>
-    {{/if}}
+
+    <div class="ui bottom attached tab segment active" data-tab="select">
+        <form class="ui form">
+            <div class="field">
+                <label>Select Script</label>
+                <div ref:script class="ui fluid search selection dropdown">
+                    <input type="hidden" name="country">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Select Script</div>
+                    <div class="menu">
+                        {{#each scripts as script, iscript}}
+                        <div class="item" data-value="{{iscript}}" data-text="{{script.name}}">
+                            <ScriptCard name="{{script.name}}" description="{{script.description}}" stamp="{{script.stamp}}" author="{{script.author}}"/>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+
+            {{#if script}}
+            <div class="ui raised segment">
+                <ScriptCard name="{{script.name}}" description="{{script.description}}" stamp="{{script.stamp}}" author="{{script.author}}"/>
+            </div>
+
+            <div class="ui positive right floated button">
+                <i class="play icon"></i>
+                Execute
+            </div>
+
+            <div class="ui negative button" on:click="onDelScript(event, script)">
+                <i class="trash icon"></i>
+                Delete
+            </div>
+            <div class="ui button" on:click="onScriptClone(event, script)">
+                <i class="clone icon"></i>
+                Clone
+            </div>
+            <div class="ui button" on:click="onScriptEdit(event, script)">
+                <i class="edit icon"></i>
+                Edit
+            </div>
+
+            {{/if}}
+        </form>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="upload">
+        <form class="ui {{uploadError ? 'error' : ''}} form">
+            <div class="field">
+                <label for="upload">Upload Script:</label>
+                <div class="ui fluid file input action">
+                    <input ref:uploadText type="text" readonly on:click="onUploadScript(event)">
+                    <input ref:uploadFile type="file" id="upload" name="files1" autocomplete="off" style="display:none" on:change="onUploadScriptSelected(event)">
+                    <div class="ui button" on:click="onUploadScript(event)">
+                        Select...
+                    </div>
+                </div>
+            </div>
+
+            {{#if uploadError}}
+            <div class="ui error message">
+                <div class="header">Unable to read file</div>
+                <p>{{uploadError}}</p>
+            </div>
+            {{/if}}
+
+            {{#if upload}}
+            <div class="ui raised segment">
+                <ScriptCard
+                        name="{{upload.name || ''}}"
+                        description="{{upload.description || ''}}"
+                        stamp="{{upload.stamp || ''}}"
+                        author="{{upload.author || ''}}"/>
+            </div>
+
+            <div class="ui primary right floated button">
+                <i class="save icon"></i>
+                Save
+            </div>
+
+            <div class="ui button">
+                <i class="edit icon"></i>
+                Edit
+            </div>
+
+            {{/if}}
+        </form>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="edit">
+        <ScriptEdit
+                name="{{edit && edit.name || ''}}"
+                description="{{edit && edit.description || ''}}"
+                stamp="{{edit && edit.stamp || `${+new Date()}`}}"
+                author="{{edit && edit.author || ''}}"
+
+                on:save="onEditSave(event)"
+                on:clone="onEditClone(event)"
+                on:new="onEditNew(event)"
+                on:delete="onEditDelete(event)"
+            />
+    </div>
 </div>
+
+<style>
+</style>
 
 <script>
     import Postmate from 'postmate';
+    import ScriptCard from './script-card.html'
+    import ScriptEdit from './script-edit.html'
 
     export default {
         setup(AutoFill) {
@@ -94,12 +124,18 @@
                 scripts: [
                     { name: 'my name', author: 'my author', description: 'my description xxx', stamp: (new Date()).toISOString() },
                     { name: 'my lname', author: 'my mauthor', description: 'my ndescription zzz', stamp: (new Date()).toISOString() }
-                ]
+                ],
+                script: undefined,
+                upload: undefined,
+                edit: undefined,
+                editOverwrite: undefined,
+                uploadError: 'testing'
             }
         },
         computed: {
         },
         oncreate() {
+            // Initialise cross-frame communication
             const handshake = new Postmate.Model({
                 height: () => document.height || document.body.offsetHeight
             });
@@ -111,26 +147,187 @@
                 parent.emit('some-event', 'Woot Woot');
             });
 
+            // Initialise tabs
+            $(this.refs.tabs).find('.item')
+                .tab();
+
+            // Initialise script selection dropdown
             $(this.refs.script).dropdown({
                 fullTextSearch: true,
                 ignoreCase: true,
                 match: 'text',
                 onChange: (iscript, text, $choice) => {
+                    iscript = parseInt(iscript, 10);
+
                     const scripts = this.get('scripts');
                     const script = (iscript >= 0 && iscript < scripts.length) ? scripts[iscript] : undefined;
                     this.set({ script });
                 }
             });
             this.observe('script', (script) => {
-                $(this.refs.script).dropdown('set selected', this.get('scripts').indexOf(script));
+                const index = this.get('scripts').indexOf(script);
+                if (index === -1)
+                    $(this.refs.script).dropdown('clear');
+                else
+                    $(this.refs.script).dropdown('set selected', `${index}`);
+
+                $(this.refs.script).dropdown('refresh');
+            }, { defer: true });
+            this.observe('scripts', (scripts) => {
+                const index = scripts.indexOf(this.get('script'));
+                if (index === -1)
+                    this.set({ script: undefined });
             });
+            this.observe('scripts', (scripts) => {
+                const index = scripts.indexOf(this.get('script'));
+                if (index === -1) {
+                    $(this.refs.script).dropdown('clear');
+                }
+                else
+                    $(this.refs.script).dropdown('set selected', `${index}`);
+
+                $(this.refs.script).dropdown('refresh');
+            }, { defer: true });
+
+            this.set({ script: this.get('scripts')[0] });
 
         },
         ondestroy() {
         },
         methods: {
+            onDelScript(event, script) {
+                event.preventDefault();
+
+                this.set({
+                    scripts: this.get('scripts').filter(s => s !== script),
+                    script: undefined
+                });
+            },
+            onUploadScript(event, script) {
+                event.preventDefault();
+
+                $(this.refs.uploadFile).click();
+            },
+            onUploadScriptSelected(event, script) {
+                if (event.target.files && event.target.files.length === 1) {
+                    this.set({
+                        upload: undefined,
+                        uploadError: undefined
+                    });
+
+                    const file = event.target.files[0];
+
+                    $(this.refs.uploadText).val(file.name);
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            this.set({
+                                upload: JSON.parse(event.target.result),
+                                uploadError: undefined
+                            });
+                        }
+                        catch (e) {
+                            this.set({
+                                upload: undefined,
+                                uploadError: e.message
+                            });
+                        }
+                    };
+                    reader.onerror = (event) => {
+                        this.set({
+                            upload: undefined,
+                            uploadError: event.target.error
+                        });
+                    };
+                    reader.readAsText(file);
+                }
+            },
+            onScriptClone(event, script) {
+                event.preventDefault();
+
+                this.set({
+                    edit: JSON.parse(JSON.stringify(script)),
+                    editOverwrite: undefined
+                });
+                $(this.refs.tabs).find('.item').tab('change tab', 'edit');
+            },
+            onScriptEdit(event, script) {
+                event.preventDefault();
+
+                this.set({
+                    edit: JSON.parse(JSON.stringify(script)),
+                    editOverwrite: script
+                });
+                $(this.refs.tabs).find('.item').tab('change tab', 'edit');
+            },
+            onEditSave({ script: edit }) {
+                const editOverwrite = this.get('editOverwrite');
+                const scripts = this.get('scripts');
+                const script = this.get('script');
+
+                edit.stamp = (new Date()).toISOString();
+
+                if (editOverwrite) {
+                    for (const [k,v] of Object.entries(edit)) {
+                        editOverwrite[k] = v;
+                    }
+
+                    this.set({
+                        scripts,
+                        script,
+                        edit
+                    });
+                }
+                else {
+                    scripts.push(edit);
+                    this.set({
+                        scripts,
+                        script: edit,
+                        edit,
+                        editOverwrite: edit
+                    })
+                }
+            },
+            onEditClone({ script: edit }) {
+                this.set({
+                   edit: JSON.parse(JSON.stringify(edit)),
+                   editOverwrite: undefined
+                });
+            },
+            onEditNew({ script: edit }) {
+                this.set({
+                    edit: {
+                        name: '',
+                        description: '',
+                        stamp: (new Date()).toISOString(),
+                        author: ''
+                    },
+                    editOverwrite: undefined
+                });
+            },
+            onEditDelete({ script: edit }) {
+                const scripts = this.get('scripts');
+                const editOverwrite = this.get('editOverwrite');
+
+                this.set({
+                    scripts: scripts.filter(s => s !== editOverwrite),
+                    edit: {
+                        name: '',
+                        description: '',
+                        stamp: (new Date()).toISOString(),
+                        author: ''
+                    },
+                    editOverwrite: undefined
+                })
+            }
+
         },
         events: {
+        },
+        components: {
+            ScriptCard,
+            ScriptEdit
         }
     };
 </script>

@@ -1,0 +1,82 @@
+<div class="ui form">
+
+    <div class="field">
+        <label>Name</label>
+        <input type="text" placeholder="Script Name" bind:value="name">
+    </div>
+
+    <div class="field">
+        <label>Author</label>
+        <input type="text" placeholder="Author Name" bind:value="author">
+    </div>
+
+    <div class="field">
+        <label>Description</label>
+        <textarea type="text" placeholder="Script Description" bind:value="description"/>
+    </div>
+
+    <div class="field">
+        <div class="ui label">
+            <i class="calendar icon"></i>
+            {{stamp.replace(/^(.*)T.*$/, '$1')}}
+            &nbsp;
+            <i class="clock icon"></i>
+            {{stamp.replace(/^.*T(.*)$/, '$1')}}
+        </div>
+    </div>
+
+    <div class="ui primary right floated button" on:click="fire('save', { script })">
+        <i class="save icon"></i>
+        Save
+    </div>
+
+    <div class="ui negative button" on:click="fire('delete', { script })">
+        <i class="trash icon"></i>
+        Delete
+    </div>
+    <div class="ui button" on:click="fire('new', { script })">
+        <i class="file icon"></i>
+        New
+    </div>
+    <div class="ui button" on:click="fire('clone', { script })">
+        <i class="clone icon"></i>
+        Clone
+    </div>
+
+</div>
+
+<style>
+</style>
+
+<script>
+    export default {
+        setup(Directive) {
+        },
+        data() {
+            return {
+                name: '',
+                description: '',
+                stamp: '',
+                author: ''
+            }
+        },
+        computed: {
+            script: (name, description, stamp, author) => {
+                return {
+                    name,
+                    description,
+                    stamp,
+                    author
+                }
+            }
+        },
+        oncreate() {
+        },
+        ondestroy() {
+        },
+        methods: {
+        },
+        events: {
+        }
+    };
+</script>

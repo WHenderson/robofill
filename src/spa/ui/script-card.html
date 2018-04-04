@@ -1,0 +1,78 @@
+<div class="anu-script-card">
+    <div class="anu-meta">
+        {{#if stamp}}
+        <div class="ui label">
+            <div>
+                <i class="calendar icon"></i>
+                {{stamp.replace(/^(.*)T.*$/, '$1')}}
+            </div>
+            <div>
+                <i class="clock icon"></i>
+                {{stamp.replace(/^.*T(.*)$/, '$1')}}
+            </div>
+        </div>
+        {{/if}}
+        {{#if author}}
+        <div class="ui teal label">{{author}}</div>
+        {{/if}}
+    </div>
+    <div class="anu-content">
+        {{#if name}}
+        <h3 class="ui dividing header">{{name}}</h3>
+        {{/if}}
+        {{#if description}}
+        <p>{{description}}</p>
+        {{/if}}
+    </div>
+</div>
+
+<style>
+    .anu-script-card {
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: stretch;
+    }
+    .anu-script-card .anu-content {
+        flex-grow: 1;
+    }
+    .anu-script-card .anu-meta {
+        padding-left: 1em;
+        border-left: 1px solid rgba(34,36,38,.15);
+        margin-left: 1em;
+    }
+    .anu-script-card .anu-meta .ui.label {
+        display: block;
+        margin: 0 0 0.5em;
+    }
+    .anu-script-card .anu-meta .ui.label > div:first-child {
+        margin-bottom: 0.5em;
+    }
+
+</style>
+
+
+<script>
+    export default {
+        setup(Directive) {
+        },
+        data() {
+            return {
+                name: '',
+                description: '',
+                stamp: '',
+                author: '',
+                edit: false
+            }
+        },
+        computed: {
+        },
+        oncreate() {
+        },
+        ondestroy() {
+        },
+        methods: {
+        },
+        events: {
+        }
+    };
+</script>
