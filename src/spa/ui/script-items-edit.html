@@ -1,0 +1,174 @@
+<div>
+    <div ref:add class="ui inverted menu">
+        <div class="ui dropdown item">
+            <i class="add icon"></i>
+            If
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                {{#each itemsByCategory(items, 'if') as item}}
+                <a class="item" title="{{item.description}}" on:click="onAdd(item)">{{item.name}}</a>
+                {{/each}}
+            </div>
+        </div>
+        <div class="ui dropdown item">
+            <i class="add icon"></i>
+            Input
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                {{#each itemsByCategory(items, 'input') as item}}
+                <a class="item" title="{{item.description}}" on:click="onAdd(item)">{{item.name}}</a>
+                {{/each}}
+            </div>
+        </div>
+        <div class="ui dropdown item">
+            <i class="add icon"></i>
+            Miscellaneous
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                {{#each itemsByNotCategories(items, ['if', 'input']) as item}}
+                <a class="item" title="{{item.description}}" on:click="onAdd(item)">{{item.name}}</a>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+    <div ref:scriptSegments class="ui segments">
+        {{#each (scriptItems || []) as scriptItem}}
+        <ScriptItemEdit :scriptItem on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)" />
+        {{/each}}
+    </div>
+</div>
+
+<script>
+    import ScriptItemEdit from './script-item-edit.html'
+
+    export default {
+        setup(Directive) {
+        },
+        data() {
+            return {
+                scriptItems: []
+            }
+        },
+        helpers: {
+            items: [
+                {
+                    category: 'if',
+                    name: 'if page',
+                    description: 'execute if specified page is active',
+                    template: {
+                        type: 'if page',
+                        fields: {
+                            title: {
+                                type: 'text',
+                                value: ''
+                            }
+                        },
+                        scriptItems: []
+                    }
+                },
+                {
+                    category: 'input',
+                    name: 'text',
+                    description: 'enter text into input element',
+                    template: {
+                        type: 'text'
+                    }
+                },
+                {
+                    category: 'input',
+                    name: 'checkbox',
+                    description: 'set/unset specified checkbox element',
+                    template: {
+                        type: 'checkbox'
+                    }
+                },
+                {
+                    category: 'input',
+                    name: 'radio',
+                    description: 'set specified radio element',
+                    template: {
+                        type: 'radio'
+                    }
+                },
+                {
+                    category: 'mouse',
+                    name: 'click',
+                    description: 'click the specified element',
+                    template: {
+                        type: 'click'
+                    }
+                },
+                {
+                    category: 'navigate',
+                    name: 'next page',
+                    description: 'navigate to the next page',
+                    template: {
+                        type: 'next page'
+                    }
+                }
+            ],
+            itemsByCategory(items, category) {
+                return items.filter(item => item.category === category);
+            },
+            itemsByNotCategories(items, categories) {
+                return items.filter(item => !categories.includes(item.category));
+            }
+        },
+        computed: {
+        },
+        oncreate() {
+            $(this.refs.tabs).find('.item')
+                .tab();
+
+            $(this.refs.add).find('.ui.dropdown')
+                .dropdown();
+        },
+        ondestroy() {
+        },
+        methods: {
+            onItemUp({ scriptItem }) {
+                const scriptItems = this.get('scriptItems');
+                const index = scriptItems.indexOf(scriptItem);
+                if (index !== 0) {
+                    this.set({
+                        scriptItems:
+                            scriptItems
+                                .slice(0, index-1)
+                                .concat([scriptItem])
+                                .concat([scriptItems[index-1]])
+                                .concat(scriptItems.slice(index + 1))
+                    })
+                }
+            },
+            onItemDown({ scriptItem }) {
+                const scriptItems = this.get('scriptItems');
+                const index = scriptItems.indexOf(scriptItem);
+                if (index !== scriptItems.length - 1) {
+                    this.set({
+                        scriptItems:
+                            scriptItems
+                                .slice(0, index)
+                                .concat([scriptItems[index + 1]])
+                                .concat([scriptItem])
+                                .concat(scriptItems.slice(index + 2))
+                    })
+                }
+            },
+            onItemDelete({ scriptItem }) {
+                const scriptItems = this.get('scriptItems');
+                this.set({ scriptItems: scriptItems.filter(si => si !== scriptItem )});
+            },
+            onAdd(item) {
+                const scriptItems = this.get('scriptItems');
+                this.set({
+                    scriptItems: scriptItems.concat([item.template])
+                })
+            }
+        },
+        events: {
+        },
+        components: {
+            ScriptItemEdit
+        }
+    };
+</script>

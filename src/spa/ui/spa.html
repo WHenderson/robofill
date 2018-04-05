@@ -18,16 +18,16 @@
                     <div class="menu">
                         {{#each scripts as script, iscript}}
                         <div class="item" data-value="{{iscript}}" data-text="{{script.name}}">
-                            <ScriptCard name="{{script.name}}" description="{{script.description}}" stamp="{{script.stamp}}" author="{{script.author}}"/>
+                            <ScriptCard :script/>
                         </div>
                         {{/each}}
                     </div>
                 </div>
             </div>
 
-            {{#if script}}
+            {{#if scriptSelect}}
             <div class="ui raised segment">
-                <ScriptCard name="{{script.name}}" description="{{script.description}}" stamp="{{script.stamp}}" author="{{script.author}}"/>
+                <ScriptCard script="{{scriptSelect}}" />
             </div>
 
             <div class="ui positive right floated button">
@@ -35,15 +35,15 @@
                 Execute
             </div>
 
-            <div class="ui negative button" on:click="onDelScript(event, script)">
+            <div class="ui negative button" on:click="onDelScript(event, scriptSelect)">
                 <i class="trash icon"></i>
                 Delete
             </div>
-            <div class="ui button" on:click="onScriptClone(event, script)">
+            <div class="ui button" on:click="onScriptClone(event, scriptSelect)">
                 <i class="clone icon"></i>
                 Clone
             </div>
-            <div class="ui button" on:click="onScriptEdit(event, script)">
+            <div class="ui button" on:click="onScriptEdit(event, scriptSelect)">
                 <i class="edit icon"></i>
                 Edit
             </div>
@@ -71,13 +71,9 @@
             </div>
             {{/if}}
 
-            {{#if upload}}
+            {{#if scriptUpload}}
             <div class="ui raised segment">
-                <ScriptCard
-                        name="{{upload.name || ''}}"
-                        description="{{upload.description || ''}}"
-                        stamp="{{upload.stamp || ''}}"
-                        author="{{upload.author || ''}}"/>
+                <ScriptCard script="{{scriptUpload}}"/>
             </div>
 
             <div class="ui primary right floated button">
@@ -95,10 +91,8 @@
     </div>
     <div class="ui bottom attached tab segment" data-tab="edit">
         <ScriptEdit
-                name="{{edit && edit.name || ''}}"
-                description="{{edit && edit.description || ''}}"
-                stamp="{{edit && edit.stamp || `${+new Date()}`}}"
-                author="{{edit && edit.author || ''}}"
+                ref:scriptEdit
+                script="{{scriptEdit || {}}}"
 
                 on:save="onEditSave(event)"
                 on:clone="onEditClone(event)"
@@ -122,12 +116,32 @@
         data() {
             return {
                 scripts: [
-                    { name: 'my name', author: 'my author', description: 'my description xxx', stamp: (new Date()).toISOString() },
+                    {
+                        name: 'my name',
+                        author: 'my author',
+                        description: 'my description xxx',
+                        stamp: (new Date()).toISOString(),
+                        scriptItems: [
+                            {
+                                type: 'set value',
+                                selector: '#Q1',
+                                data: 'my text val',
+                                enabled: true
+                            },
+                            {
+                                type: 'set value',
+                                selector: '#Q2',
+                                data: 'my other text val',
+                                enabled: false
+                            }
+
+                        ]
+                    },
                     { name: 'my lname', author: 'my mauthor', description: 'my ndescription zzz', stamp: (new Date()).toISOString() }
                 ],
-                script: undefined, // script currently selected
-                upload: undefined, // script being uploaded
-                edit: undefined, // script being edited
+                scriptSelect: undefined, // script currently selected
+                scriptUpload: undefined, // script being uploaded
+                scriptEdit: undefined, // script being edited
                 editOverwrite: undefined, // script being overwritten (when saved)
                 uploadError: undefined // error during upload
             }
@@ -160,12 +174,12 @@
                     iscript = parseInt(iscript, 10);
 
                     const scripts = this.get('scripts');
-                    const script = (iscript >= 0 && iscript < scripts.length) ? scripts[iscript] : undefined;
-                    this.set({ script });
+                    const scriptSelect = (iscript >= 0 && iscript < scripts.length) ? scripts[iscript] : undefined;
+                    this.set({ scriptSelect });
                 }
             });
-            this.observe('script', (script) => {
-                const index = this.get('scripts').indexOf(script);
+            this.observe('scriptSelect', (scriptSelect) => {
+                const index = this.get('scripts').indexOf(scriptSelect);
                 if (index === -1)
                     $(this.refs.script).dropdown('clear');
                 else
@@ -174,12 +188,12 @@
                 $(this.refs.script).dropdown('refresh');
             }, { defer: true });
             this.observe('scripts', (scripts) => {
-                const index = scripts.indexOf(this.get('script'));
+                const index = scripts.indexOf(this.get('scriptSelect'));
                 if (index === -1)
-                    this.set({ script: undefined });
+                    this.set({ scriptSelect: undefined });
             });
             this.observe('scripts', (scripts) => {
-                const index = scripts.indexOf(this.get('script'));
+                const index = scripts.indexOf(this.get('scriptSelect'));
                 if (index === -1) {
                     $(this.refs.script).dropdown('clear');
                 }
@@ -189,7 +203,7 @@
                 $(this.refs.script).dropdown('refresh');
             }, { defer: true });
 
-            this.set({ script: this.get('scripts')[0] });
+            this.set({ scriptSelect: this.get('scripts')[0] });
 
         },
         ondestroy() {
@@ -211,7 +225,7 @@
             onUploadScriptSelected(event, script) {
                 if (event.target.files && event.target.files.length === 1) {
                     this.set({
-                        upload: undefined,
+                        scriptUpload: undefined,
                         uploadError: undefined
                     });
 
@@ -223,20 +237,20 @@
                     reader.onload = (event) => {
                         try {
                             this.set({
-                                upload: JSON.parse(event.target.result),
+                                scriptUpload: JSON.parse(event.target.result),
                                 uploadError: undefined
                             });
                         }
                         catch (e) {
                             this.set({
-                                upload: undefined,
+                                scriptUpload: undefined,
                                 uploadError: e.message
                             });
                         }
                     };
                     reader.onerror = (event) => {
                         this.set({
-                            upload: undefined,
+                            scriptUpload: undefined,
                             uploadError: event.target.error
                         });
                     };
@@ -247,7 +261,7 @@
                 event.preventDefault();
 
                 this.set({
-                    edit: JSON.parse(JSON.stringify(script)),
+                    scriptEdit: JSON.parse(JSON.stringify(script)),
                     editOverwrite: undefined
                 });
                 $(this.refs.tabs).find('.item').tab('change tab', 'edit');
@@ -256,48 +270,48 @@
                 event.preventDefault();
 
                 this.set({
-                    edit: JSON.parse(JSON.stringify(script)),
+                    scriptEdit: JSON.parse(JSON.stringify(script)),
                     editOverwrite: script
                 });
                 $(this.refs.tabs).find('.item').tab('change tab', 'edit');
             },
-            onEditSave({ script: edit }) {
+            onEditSave({ script: scriptEdit }) {
                 const editOverwrite = this.get('editOverwrite');
                 const scripts = this.get('scripts');
-                const script = this.get('script');
+                const scriptSelect = this.get('scriptSelect');
 
-                edit.stamp = (new Date()).toISOString();
+                scriptEdit.stamp = (new Date()).toISOString();
 
                 if (editOverwrite) {
-                    for (const [k,v] of Object.entries(edit)) {
+                    for (const [k,v] of Object.entries(scriptEdit)) {
                         editOverwrite[k] = v;
                     }
 
                     this.set({
                         scripts,
-                        script,
-                        edit
+                        scriptSelect,
+                        scriptEdit
                     });
                 }
                 else {
-                    scripts.push(edit);
+                    scripts.push(scriptEdit);
                     this.set({
                         scripts,
-                        script: edit,
-                        edit,
-                        editOverwrite: edit
+                        scriptSelect: scriptEdit,
+                        scriptEdit,
+                        editOverwrite: scriptEdit
                     })
                 }
             },
-            onEditClone({ script: edit }) {
+            onEditClone({ script: scriptEdit }) {
                 this.set({
-                   edit: JSON.parse(JSON.stringify(edit)),
+                    scriptEdit: JSON.parse(JSON.stringify(scriptEdit)),
                    editOverwrite: undefined
                 });
             },
-            onEditNew({ script: edit }) {
+            onEditNew({ script: scriptEdit }) {
                 this.set({
-                    edit: {
+                    scriptEdit: {
                         name: '',
                         description: '',
                         stamp: (new Date()).toISOString(),
@@ -306,13 +320,13 @@
                     editOverwrite: undefined
                 });
             },
-            onEditDelete({ script: edit }) {
+            onEditDelete({ script: scriptEdit }) {
                 const scripts = this.get('scripts');
                 const editOverwrite = this.get('editOverwrite');
 
                 this.set({
                     scripts: scripts.filter(s => s !== editOverwrite),
-                    edit: {
+                    scriptEdit: {
                         name: '',
                         description: '',
                         stamp: (new Date()).toISOString(),

@@ -1,30 +1,32 @@
+{{#if script}}
 <div class="anu-script-card">
     <div class="anu-meta">
-        {{#if stamp}}
+        {{#if script.stamp}}
         <div class="ui label">
             <div>
                 <i class="calendar icon"></i>
-                {{stamp.replace(/^(.*)T.*$/, '$1')}}
+                {{script.stamp.replace(/^(.*)T.*$/, '$1')}}
             </div>
             <div>
                 <i class="clock icon"></i>
-                {{stamp.replace(/^.*T(.*)$/, '$1')}}
+                {{script.stamp.replace(/^.*T(.*)$/, '$1')}}
             </div>
         </div>
         {{/if}}
-        {{#if author}}
-        <div class="ui teal label">{{author}}</div>
+        {{#if script.author}}
+        <div class="ui teal label">{{script.author}}</div>
         {{/if}}
     </div>
     <div class="anu-content">
-        {{#if name}}
-        <h3 class="ui dividing header">{{name}}</h3>
+        {{#if script.name}}
+        <h3 class="ui dividing header">{{script.name}}</h3>
         {{/if}}
-        {{#if description}}
-        <p>{{description}}</p>
+        {{#if script.description}}
+        <p>{{script.description}}</p>
         {{/if}}
     </div>
 </div>
+{{/if}}
 
 <style>
     .anu-script-card {
@@ -57,11 +59,7 @@
         },
         data() {
             return {
-                name: '',
-                description: '',
-                stamp: '',
-                author: '',
-                edit: false
+                script: {}
             }
         },
         computed: {

@@ -1,0 +1,106 @@
+<div class="ui raised segment anu-script-item">
+    <div class="anu-script-item-left">
+        <div ref:typeLabel class="ui {{(scriptItem.enabled && typeMetaData[scriptItem.type] || {}).color || 'grey'}} label">{{scriptItem.type}}</div>
+    </div>
+    <div class="anu-script-item-content">
+        <div class="ui form">
+            {{#each Object.entries(scriptItem.fields || {}) as [name,field]}}
+            {{#if field.type === 'text'}}
+            <div class="field">
+                <label>{{field.label || name}}</label>
+                <input type="text" placeholder="{{field.label || name}}" bind:value="field.value">
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+    </div>
+    <div class="anu-script-item-right">
+        <div class="ui right vertical icon menu anu-script-item-menu">
+            <a class="item" on:click="fire('up', { scriptItem })">
+                <i class="angle up icon"></i>
+            </a>
+            <a class="item" on:click="onItemEnableToggle(event)">
+                <i class="{{scriptItem.enabled ? 'check' : 'ban'}} icon"></i>
+            </a>
+            <a class="item" on:click="fire('delete', { scriptItem })">
+                <i class="trash icon"></i>
+            </a>
+            <a class="item" on:click="fire('down', { scriptItem })">
+                <i class="angle down icon"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .anu-script-item {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        padding: 0;
+    }
+    .anu-script-item-left {
+
+    }
+    .anu-script-item-content {
+        flex-grow: 1;
+        padding: 0.5em;
+    }
+    .anu-script-item-right {
+    }
+
+    .anu-script-item-menu .item:hover .check.icon {
+        color: #21ba45;
+    }
+    .anu-script-item-menu .item:hover .trash.icon {
+        color: #db2828;
+    }
+
+    ref:typeLabel {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-left-radius: 0;
+
+        writing-mode: tb-rl;
+        padding: 0.5em;
+    }
+</style>
+
+<script>
+    export default {
+        setup(Directive) {
+        },
+        data() {
+            return {
+                scriptItem: {}
+            }
+        },
+        helpers: {
+            typeMetaData: {
+                'set value': {
+                    'color': 'blue'
+                }
+            }
+        },
+        computed: {
+        },
+        oncreate() {
+            this.observe('scriptItem', (scriptItem) => console.log('changed', scriptItem));
+        },
+        ondestroy() {
+        },
+        methods: {
+            onItemEnableToggle(event) {
+                event.preventDefault();
+
+                const scriptItem = this.get('scriptItem');
+                scriptItem.enabled = !scriptItem.enabled;
+                this.set({ scriptItem });
+            }
+        },
+        events: {
+        },
+        components: {
+        }
+    };
+</script>
