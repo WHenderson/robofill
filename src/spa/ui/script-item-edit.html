@@ -1,104 +1,112 @@
-<div class="ui raised segment anu-script-item">
-    <div class="anu-script-item-left">
-        <div ref:typeLabel class="ui {{scriptItem.enabled && templates[scriptItem.type] && templates[scriptItem.type].category.color || 'grey'}} label">{{templates[scriptItem.type] && templates[scriptItem.type].label || scriptItem.type}}</div>
+<div class="ui raised segment anu-flex-row">
+    <div>
+        <div ref:typeLabel class="ui {{scriptItem.enabled && category.color || 'grey'}} label">{{template.label || scriptItem.type}}</div>
     </div>
-    <div class="anu-script-item-content">
-        <div class="ui form">
-            {{#each Object.values(templates[scriptItem.type] && templates[scriptItem.type].fields || {}) as fieldTemplate}}
-            {{#if ['text', 'trilean', 'selector'].includes(fieldTemplate.resultType) }}
-                {{#if fieldTemplate.resultType === 'trilean' && scriptItem[fieldTemplate.name].type === 'value'}}
-                <div class="field">
-                    <label>{{fieldTemplate.label || name}}</label>
-                    <div class="inline fields">
+    <div class="anu-flex-col anu-flex-content">
+        <div class="anu-flex-row">
+            <div class="anu-flex-content">
+                <div class="ui form">
+                    {{#each Object.values(template.fields || {}) as fieldTemplate}}
+                    {{#if ['text', 'trilean', 'selector'].includes(fieldTemplate.resultType) }}
+                        {{#if fieldTemplate.resultType === 'trilean' && scriptItem[fieldTemplate.name].type === 'value'}}
                         <div class="field">
-                            <label class="ui icon button" on:click="onChangeFieldType(event, fieldTemplate, scriptItem[fieldTemplate.name])">
-                                <i class="font icon" title="Value"></i>
-                            </label>
-                            <div class="ui radio checkbox">
-                                <input type="radio" checked="{{scriptItem[fieldTemplate.name].value === true}}" on:click="onSetFieldValue(event, fieldTemplate, scriptItem[fieldTemplate.name], true)">
-                                <label>Checked</label>
-                            </div>
-                            <div class="ui radio checkbox">
-                                <input type="radio" checked="{{scriptItem[fieldTemplate.name].value === false}}" on:click="onSetFieldValue(event, fieldTemplate, scriptItem[fieldTemplate.name], false)">
-                                <label>Unchecked</label>
-                            </div>
-                            <div class="ui radio checkbox">
-                                <input type="radio" checked="{{scriptItem[fieldTemplate.name].value !== true && scriptItem[fieldTemplate.name].value !== false}}" on:click="onSetFieldValue(event, fieldTemplate, scriptItem[fieldTemplate.name], undefined)">
-                                <label>Indeterminate</label>
+                            <label>{{fieldTemplate.label || name}}</label>
+                            <div class="inline fields">
+                                <div class="field">
+                                    <label class="ui icon button" on:click="onChangeFieldType(event, fieldTemplate, scriptItem[fieldTemplate.name])">
+                                        <i class="font icon" title="Value"></i>
+                                    </label>
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" checked="{{scriptItem[fieldTemplate.name].value === true}}" on:click="onSetFieldValue(event, fieldTemplate, scriptItem[fieldTemplate.name], true)">
+                                        <label>Checked</label>
+                                    </div>
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" checked="{{scriptItem[fieldTemplate.name].value === false}}" on:click="onSetFieldValue(event, fieldTemplate, scriptItem[fieldTemplate.name], false)">
+                                        <label>Unchecked</label>
+                                    </div>
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" checked="{{scriptItem[fieldTemplate.name].value !== true && scriptItem[fieldTemplate.name].value !== false}}" on:click="onSetFieldValue(event, fieldTemplate, scriptItem[fieldTemplate.name], undefined)">
+                                        <label>Indeterminate</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                {{else}}
-                <div class="field">
-                    <label>{{fieldTemplate.label || name}}</label>
-                    <div class="ui left action input">
-                        <button class="ui icon button" on:click="onChangeFieldType(event, fieldTemplate, scriptItem[fieldTemplate.name])">
-                            {{#if scriptItem[fieldTemplate.name].type === 'formula'}}
-                            <i class="superscript icon" title="Formula"></i>
-                            {{elseif scriptItem[fieldTemplate.name].type === 'code'}}
-                            <i class="code icon" title="Code"></i>
-                            {{else}}
-                            <i class="font icon" title="Value"></i>
-                            {{/if}}
-                        </button>
-                        {{#if multiline}}
-                            {{#if scriptItem[fieldTemplate.name].type === 'value'}}
-                            <textarea type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].value"></textarea>
-                            {{elseif scriptItem[fieldTemplate.name].type === 'formula'}}
-                            <textarea type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].formula"></textarea>
-                            {{elseif scriptItem[fieldTemplate.name].type === 'code'}}
-                            <textarea type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].code"></textarea>
-                            {{/if}}
                         {{else}}
-                            {{#if scriptItem[fieldTemplate.name].type === 'value'}}
-                            <input type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].value">
-                            {{elseif scriptItem[fieldTemplate.name].type === 'formula'}}
-                            <input type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].formula">
-                            {{elseif scriptItem[fieldTemplate.name].type === 'code'}}
-                            <input type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].code">
-                            {{/if}}
+                        <div class="field">
+                            <label>{{fieldTemplate.label || name}}</label>
+                            <div class="ui left action input">
+                                <button class="ui icon button" on:click="onChangeFieldType(event, fieldTemplate, scriptItem[fieldTemplate.name])">
+                                    {{#if scriptItem[fieldTemplate.name].type === 'formula'}}
+                                    <i class="superscript icon" title="Formula"></i>
+                                    {{elseif scriptItem[fieldTemplate.name].type === 'code'}}
+                                    <i class="code icon" title="Code"></i>
+                                    {{else}}
+                                    <i class="font icon" title="Value"></i>
+                                    {{/if}}
+                                </button>
+                                {{#if multiline}}
+                                    {{#if scriptItem[fieldTemplate.name].type === 'value'}}
+                                    <textarea type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].value"></textarea>
+                                    {{elseif scriptItem[fieldTemplate.name].type === 'formula'}}
+                                    <textarea type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].formula"></textarea>
+                                    {{elseif scriptItem[fieldTemplate.name].type === 'code'}}
+                                    <textarea type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].code"></textarea>
+                                    {{/if}}
+                                {{else}}
+                                    {{#if scriptItem[fieldTemplate.name].type === 'value'}}
+                                    <input type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].value">
+                                    {{elseif scriptItem[fieldTemplate.name].type === 'formula'}}
+                                    <input type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].formula">
+                                    {{elseif scriptItem[fieldTemplate.name].type === 'code'}}
+                                    <input type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].code">
+                                    {{/if}}
+                                {{/if}}
+                            </div>
+                        </div>
                         {{/if}}
-                    </div>
+                    {{/if}}
+                    {{/each}}
                 </div>
-                {{/if}}
-            {{/if}}
-            {{/each}}
+            </div>
+            <div class="ui right vertical icon menu">
+                <a class="item" on:click="fire('up', { scriptItem })">
+                    <i class="angle up icon"></i>
+                </a>
+                <a class="item" on:click="onItemEnableToggle(event)">
+                    <i class="{{scriptItem.enabled ? 'check' : 'ban'}} icon"></i>
+                </a>
+                <a class="item" on:click="fire('delete', { scriptItem })">
+                    <i class="trash icon"></i>
+                </a>
+                <a class="item" on:click="fire('down', { scriptItem })">
+                    <i class="angle down icon"></i>
+                </a>
+            </div>
         </div>
-    </div>
-    <div class="anu-script-item-right">
-        <div class="ui right vertical icon menu anu-script-item-menu">
-            <a class="item" on:click="fire('up', { scriptItem })">
-                <i class="angle up icon"></i>
-            </a>
-            <a class="item" on:click="onItemEnableToggle(event)">
-                <i class="{{scriptItem.enabled ? 'check' : 'ban'}} icon"></i>
-            </a>
-            <a class="item" on:click="fire('delete', { scriptItem })">
-                <i class="trash icon"></i>
-            </a>
-            <a class="item" on:click="fire('down', { scriptItem })">
-                <i class="angle down icon"></i>
-            </a>
+        {{#if template.hasSubScript}}
+        <div class="anu-flex-content">
+            <ScriptItemsEdit scriptItems="{{scriptItem.scriptItems}}"/>
         </div>
+        {{/if}}
     </div>
 </div>
 
 <style>
-    .anu-script-item {
+    .anu-flex-row {
         display: flex;
         flex-direction: row;
         align-items: stretch;
         padding: 0;
     }
-    .anu-script-item-left {
-
+    .anu-flex-col {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0;
     }
-    .anu-script-item-content {
+    .anu-flex-content {
         flex-grow: 1;
         padding: 0.5em;
-    }
-    .anu-script-item-right {
     }
 
     .anu-script-item-menu .item:hover .check.icon {
@@ -120,6 +128,7 @@
 
 <script>
     import { templates, categories } from '../lib/category-template-mapping.es6';
+    import ScriptItemsEdit from './script-items-edit.html'
 
     export default {
         setup(Directive) {
@@ -135,6 +144,8 @@
             categories
         },
         computed: {
+            template: (scriptItem) => scriptItem && templates[scriptItem.type] || {},
+            category: (template) => template.category || {}
         },
         oncreate() {
             this.observe('scriptItem', (scriptItem) => console.log('changed', scriptItem));
@@ -183,6 +194,7 @@
         events: {
         },
         components: {
+            ScriptItemsEdit
         }
     };
 </script>
