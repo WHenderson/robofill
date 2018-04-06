@@ -71,18 +71,20 @@
 <script>
     import ScriptItemsEdit from './script-items-edit.html'
 
+    const scriptDefaults = {
+        name: '',
+        description: '',
+        stamp: '',
+        author: '',
+        scriptItems: []
+    };
+
     export default {
         setup(Directive) {
         },
         data() {
             return {
-                script: {
-                    name: '',
-                    description: '',
-                    stamp: '',
-                    author: '',
-                    scriptItems: []
-                }
+                script: Object.assign({}, scriptDefaults)
             }
         },
         helpers: {
@@ -92,6 +94,18 @@
         oncreate() {
             $(this.refs.tabs).find('.item')
                 .tab();
+
+            this.observe('script', script => {
+                if (!script) {
+                    this.set({
+                        script: Object.assign({}, scriptDefaults)
+                    });
+                }
+                else if (JSON.stringify(script) !== JSON.stringify(Object.assign({}, scriptDefaults, script))) {
+                    Object.assign(script, scriptDefaults, script);
+                    this.set({ script });
+                }
+            })
         },
         ondestroy() {
         },

@@ -10,6 +10,8 @@ function createInstance() {
     const instance = {};
 
     instance.type = this.name;
+    instance.enabled = true;
+
     if (this.fields) {
         for (const field of this.fields)
             instance[field.name] = field.default || undefined;
