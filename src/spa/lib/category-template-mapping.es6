@@ -14,7 +14,7 @@ function createInstance() {
 
     if (this.fields) {
         for (const field of this.fields)
-            instance[field.name] = field.default || undefined;
+            instance[field.name] = field.default || {};
     }
     if (this.hasSubScript)
         instance.scriptItems = [];

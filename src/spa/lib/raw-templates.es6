@@ -9,7 +9,10 @@ export default arrayToObject([
             {
                 name: 'title',
                 label: 'Title',
-                default: '',
+                default: {
+                    type: 'value',
+                    value: ''
+                },
                 resultType: 'text'
             }
         ],
@@ -24,13 +27,19 @@ export default arrayToObject([
                 name: 'selector',
                 label: 'CSS Selector',
                 placeHolder: '#Qxxx',
-                default: '',
+                default: {
+                    type: 'value',
+                    value: ''
+                },
                 resultType: 'selector'
             },
             {
                 name: 'value',
                 label: 'Value',
-                default: '',
+                default: {
+                    type: 'value',
+                    value: ''
+                },
                 resultType: 'text'
             }
         ]
@@ -44,13 +53,19 @@ export default arrayToObject([
                 name: 'selector',
                 label: 'CSS Selector',
                 placeHolder: '#Qxxx',
-                default: '',
+                default: {
+                    type: 'value',
+                    value: ''
+                },
                 resultType: 'selector'
             },
             {
                 name: 'state',
                 label: 'Target State',
-                default: true,
+                default: {
+                    type: 'value',
+                    value: true
+                },
                 resultType: 'trilean' // 3 state boolean (true/false/undefined)
             }
         ]
