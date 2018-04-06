@@ -4,12 +4,64 @@
     </div>
     <div class="anu-script-item-content">
         <div class="ui form">
-            {{#each Object.entries(scriptItem.fields || {}) as [name,field]}}
-            {{#if field.type === 'text'}}
-            <div class="field">
-                <label>{{field.label || name}}</label>
-                <input type="text" placeholder="{{field.label || name}}" bind:value="field.value">
-            </div>
+            {{#each Object.values(templates[scriptItem.type] && templates[scriptItem.type].fields || {}) as fieldTemplate}}
+            {{#if ['text', 'trilean', 'selector'].includes(fieldTemplate.resultType) }}
+                {{#if fieldTemplate.resultType === 'trilean' && scriptItem[fieldTemplate.name].type === 'value'}}
+                <div class="field">
+                    <label>{{fieldTemplate.label || name}}</label>
+                    <div class="inline fields">
+                        <div class="field">
+                            <label class="ui icon button" on:click="onChangeFieldType(event, fieldTemplate, scriptItem[fieldTemplate.name])">
+                                <i class="font icon" title="Value"></i>
+                            </label>
+                            <div class="ui radio checkbox">
+                                <input type="radio" checked="{{scriptItem[fieldTemplate.name].value === true}}" on:click="onSetFieldValue(event, fieldTemplate, scriptItem[fieldTemplate.name], true)">
+                                <label>Checked</label>
+                            </div>
+                            <div class="ui radio checkbox">
+                                <input type="radio" checked="{{scriptItem[fieldTemplate.name].value === false}}" on:click="onSetFieldValue(event, fieldTemplate, scriptItem[fieldTemplate.name], false)">
+                                <label>Unchecked</label>
+                            </div>
+                            <div class="ui radio checkbox">
+                                <input type="radio" checked="{{scriptItem[fieldTemplate.name].value !== true && scriptItem[fieldTemplate.name].value !== false}}" on:click="onSetFieldValue(event, fieldTemplate, scriptItem[fieldTemplate.name], undefined)">
+                                <label>Indeterminate</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{else}}
+                <div class="field">
+                    <label>{{fieldTemplate.label || name}}</label>
+                    <div class="ui left action input">
+                        <button class="ui icon button" on:click="onChangeFieldType(event, fieldTemplate, scriptItem[fieldTemplate.name])">
+                            {{#if scriptItem[fieldTemplate.name].type === 'formula'}}
+                            <i class="superscript icon" title="Formula"></i>
+                            {{elseif scriptItem[fieldTemplate.name].type === 'code'}}
+                            <i class="code icon" title="Code"></i>
+                            {{else}}
+                            <i class="font icon" title="Value"></i>
+                            {{/if}}
+                        </button>
+                        {{#if multiline}}
+                            {{#if scriptItem[fieldTemplate.name].type === 'value'}}
+                            <textarea type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].value"></textarea>
+                            {{elseif scriptItem[fieldTemplate.name].type === 'formula'}}
+                            <textarea type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].formula"></textarea>
+                            {{elseif scriptItem[fieldTemplate.name].type === 'code'}}
+                            <textarea type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].code"></textarea>
+                            {{/if}}
+                        {{else}}
+                            {{#if scriptItem[fieldTemplate.name].type === 'value'}}
+                            <input type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].value">
+                            {{elseif scriptItem[fieldTemplate.name].type === 'formula'}}
+                            <input type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].formula">
+                            {{elseif scriptItem[fieldTemplate.name].type === 'code'}}
+                            <input type="text" placeholder="{{fieldTemplate.label || name}}" bind:value="scriptItem[fieldTemplate.name].code">
+                            {{/if}}
+                        {{/if}}
+                    </div>
+                </div>
+                {{/if}}
             {{/if}}
             {{/each}}
         </div>
@@ -74,7 +126,8 @@
         },
         data() {
             return {
-                scriptItem: {}
+                scriptItem: {},
+                multiline: false
             }
         },
         helpers: {
@@ -95,6 +148,36 @@
                 const scriptItem = this.get('scriptItem');
                 scriptItem.enabled = !scriptItem.enabled;
                 this.set({ scriptItem });
+            },
+            onChangeFieldType(event, fieldTemplate, field) {
+                event.preventDefault();
+
+                const multiline = !this.get('multiline');
+
+                if (!multiline || (fieldTemplate.resultType === 'trilean' && field.type === 'value')) {
+                    switch (field.type) {
+                        case 'value':
+                            field.type = 'formula';
+                            field.formula = field.formula || '';
+                            break;
+                        case 'formula':
+                            field.type = 'code';
+                            field.code = field.code || '';
+                            break;
+                        default:
+                            field.type = 'value';
+                            break;
+                    }
+                }
+
+                this.set({ scriptItem: this.get('scriptItem'), multiline });
+            },
+            onSetFieldValue(event, fieldTemplate, field, value) {
+                //event.preventDefault();
+
+                field.value = value;
+                this.set({ scriptItem: this.get('scriptItem') });
+                return false;
             }
         },
         events: {

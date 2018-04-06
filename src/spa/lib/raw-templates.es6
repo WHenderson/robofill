@@ -79,7 +79,10 @@ export default arrayToObject([
                 name: 'selector',
                 label: 'CSS Selector',
                 placeHolder: '#Qxxx',
-                default: '',
+                default: {
+                    type: 'value',
+                    value: ''
+                },
                 resultType: 'selector'
             }
         ]
@@ -93,7 +96,10 @@ export default arrayToObject([
                 name: 'selector',
                 label: 'CSS Selector',
                 placeHolder: '#Qxxx',
-                default: '',
+                default: {
+                    type: 'value',
+                    value: ''
+                },
                 resultType: 'selector'
             }
         ]
@@ -116,7 +122,10 @@ export default arrayToObject([
             {
                 name: 'value',
                 label: 'Value',
-                default: '',
+                default: {
+                    type: 'value',
+                    value: ''
+                },
                 resultType: 'text'
             }
         ]
