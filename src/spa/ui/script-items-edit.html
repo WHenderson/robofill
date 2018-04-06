@@ -1,36 +1,35 @@
 <div>
-    <div ref:add class="ui inverted menu">
-        <div class="ui dropdown item">
+    <div ref:add class="ui menu">
+        {{#each Object.values(categories) as category}}
+        <div class="ui dropdown item" title="{{category.description}}">
             <i class="add icon"></i>
-            If
+            {{category.label}}
             <i class="dropdown icon"></i>
             <div class="menu">
-                {{#each itemsByCategory(items, 'if') as item}}
-                <a class="item" title="{{item.description}}" on:click="onAdd(item)">{{item.name}}</a>
-                {{/each}}
+                {{#if category.sub}}
+                    {{#each Object.values(category.sub) as sub}}
+                        <div class="header" title="{{sub.description}}">{{sub.label}}</div>
+                        {{#each (sub.templates || []) as template}}
+                        <div class="item" title="{{template.description}}" on:click="onAdd(template)">
+                            <div class="ui {{sub.color}} empty circular label"></div>
+                            {{template.label}}
+                        </div>
+
+                        {{/each}}
+                    {{/each}}
+                {{else}}
+                    {{#each (category.templates || []) as template}}
+                    <div class="item" title="{{template.description}}" on:click="onAdd(template)">
+                        <div class="ui {{category.color}} empty circular label"></div>
+                        {{template.label}}
+                    </div>
+                    {{/each}}
+                {{/if}}
             </div>
         </div>
-        <div class="ui dropdown item">
-            <i class="add icon"></i>
-            Input
-            <i class="dropdown icon"></i>
-            <div class="menu">
-                {{#each itemsByCategory(items, 'input') as item}}
-                <a class="item" title="{{item.description}}" on:click="onAdd(item)">{{item.name}}</a>
-                {{/each}}
-            </div>
-        </div>
-        <div class="ui dropdown item">
-            <i class="add icon"></i>
-            Miscellaneous
-            <i class="dropdown icon"></i>
-            <div class="menu">
-                {{#each itemsByNotCategories(items, ['if', 'input']) as item}}
-                <a class="item" title="{{item.description}}" on:click="onAdd(item)">{{item.name}}</a>
-                {{/each}}
-            </div>
-        </div>
+        {{/each}}
     </div>
+
     <div ref:scriptSegments class="ui segments">
         {{#each (scriptItems || []) as scriptItem}}
         <ScriptItemEdit :scriptItem on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)" />
@@ -40,6 +39,7 @@
 
 <script>
     import ScriptItemEdit from './script-item-edit.html'
+    import { templates, categories } from '../lib/category-template-mapping.es6';
 
     export default {
         setup(Directive) {
@@ -50,69 +50,8 @@
             }
         },
         helpers: {
-            items: [
-                {
-                    category: 'if',
-                    name: 'if page',
-                    description: 'execute if specified page is active',
-                    template: {
-                        type: 'if page',
-                        fields: {
-                            title: {
-                                type: 'text',
-                                value: ''
-                            }
-                        },
-                        scriptItems: []
-                    }
-                },
-                {
-                    category: 'input',
-                    name: 'text',
-                    description: 'enter text into input element',
-                    template: {
-                        type: 'text'
-                    }
-                },
-                {
-                    category: 'input',
-                    name: 'checkbox',
-                    description: 'set/unset specified checkbox element',
-                    template: {
-                        type: 'checkbox'
-                    }
-                },
-                {
-                    category: 'input',
-                    name: 'radio',
-                    description: 'set specified radio element',
-                    template: {
-                        type: 'radio'
-                    }
-                },
-                {
-                    category: 'mouse',
-                    name: 'click',
-                    description: 'click the specified element',
-                    template: {
-                        type: 'click'
-                    }
-                },
-                {
-                    category: 'navigate',
-                    name: 'next page',
-                    description: 'navigate to the next page',
-                    template: {
-                        type: 'next page'
-                    }
-                }
-            ],
-            itemsByCategory(items, category) {
-                return items.filter(item => item.category === category);
-            },
-            itemsByNotCategories(items, categories) {
-                return items.filter(item => !categories.includes(item.category));
-            }
+            templates,
+            categories
         },
         computed: {
         },
@@ -161,7 +100,7 @@
             onAdd(item) {
                 const scriptItems = this.get('scriptItems');
                 this.set({
-                    scriptItems: scriptItems.concat([item.template])
+                    scriptItems: scriptItems.concat([item.template()])
                 })
             }
         },

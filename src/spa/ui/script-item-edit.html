@@ -1,6 +1,6 @@
 <div class="ui raised segment anu-script-item">
     <div class="anu-script-item-left">
-        <div ref:typeLabel class="ui {{(scriptItem.enabled && typeMetaData[scriptItem.type] || {}).color || 'grey'}} label">{{scriptItem.type}}</div>
+        <div ref:typeLabel class="ui {{scriptItem.enabled && templates[scriptItem.type] && templates[scriptItem.type].category.color || 'grey'}} label">{{templates[scriptItem.type] && templates[scriptItem.type].label || scriptItem.type}}</div>
     </div>
     <div class="anu-script-item-content">
         <div class="ui form">
@@ -67,6 +67,8 @@
 </style>
 
 <script>
+    import { templates, categories } from '../lib/category-template-mapping.es6';
+
     export default {
         setup(Directive) {
         },
@@ -76,11 +78,8 @@
             }
         },
         helpers: {
-            typeMetaData: {
-                'set value': {
-                    'color': 'blue'
-                }
-            }
+            templates,
+            categories
         },
         computed: {
         },
