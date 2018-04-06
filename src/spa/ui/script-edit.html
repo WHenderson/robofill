@@ -96,15 +96,18 @@
                 .tab();
 
             this.observe('script', script => {
-                if (!script) {
-                    this.set({
-                        script: Object.assign({}, scriptDefaults)
-                    });
+                let changed = false;
+
+                if (!script)
+                    script = {};
+                for (const [k,v] of Object.entries(scriptDefaults)) {
+                    if (!{}.hasOwnProperty.call(script, k)) {
+                        script[k] = v;
+                        changed = true;
+                    }
                 }
-                else if (JSON.stringify(script) !== JSON.stringify(Object.assign({}, scriptDefaults, script))) {
-                    Object.assign(script, scriptDefaults, script);
+                if (changed)
                     this.set({ script });
-                }
             })
         },
         ondestroy() {
