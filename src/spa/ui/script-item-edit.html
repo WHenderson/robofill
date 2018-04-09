@@ -4,7 +4,7 @@
     </div>
     <div class="anu-flex-col anu-flex-content">
         <div class="anu-flex-row">
-            <div class="anu-flex-content">
+            <div ref:item class="anu-flex-content">
                 <div class="ui form">
                     {{#each Object.values(template.fields || {}) as fieldTemplate}}
                     {{#if ['text', 'trilean', 'selector'].includes(fieldTemplate.resultType) }}
@@ -106,7 +106,12 @@
     }
     .anu-flex-content {
         flex-grow: 1;
-        xpadding: 0.5em;
+    }
+
+    ref:item {
+        padding-top: 0.5em;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
     }
 
     .anu-script-item-menu .item:hover .check.icon {
@@ -122,6 +127,7 @@
 
     ref:flexLabel {
         position: relative;
+        width: 24px;
     }
     ref:typeLabel {
         position: absolute;
@@ -129,10 +135,11 @@
         border-top-right-radius: 0;
         border-bottom-left-radius: 0;
 
-        writing-mode: tb-rl;
+        writing-mode: vertical-lr;
         padding: 0.5em;
         display: block;
         height: 100%;
+        width: 2em;
     }
 
     ref:menuArrange {
