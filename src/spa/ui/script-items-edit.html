@@ -1,5 +1,5 @@
 <div>
-    <div ref:add class="ui compact menu">
+    <div ref:add class="ui menu">
         {{#each Object.values(categories) as category}}
         <div class="ui dropdown item" title="{{category.description}}">
             <i class="add icon"></i>
@@ -31,15 +31,15 @@
     </div>
 
     <div ref:scriptSegments class="ui segments">
-        {{#each (scriptItems || []) as scriptItem}}
+        {{#each (scriptItems || []) as scriptItem, scriptIndex}}
         <ScriptItemEdit :scriptItem on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)">
-            <a slot="menuItemsTop" class="item" on:click="onItemUp(event, { scriptItem })">
+            <a slot="menuItemsTop" class="item {{scriptIndex === 0 ? 'disabled' : ''}}" on:click="onItemUp(event, { scriptItem, scriptIndex })">
                 <i class="angle up icon"></i>
             </a>
-            <a slot="menuItemsBottom" class="item"  on:click="onItemDelete(event, { scriptItem })">
+            <a slot="menuItemsBottom" class="item"  on:click="onItemDelete(event, { scriptItem, scriptIndex })">
                 <i class="trash icon"></i>
             </a>
-            <a slot="menuItemsBottom" class="item" on:click="onItemDown(event, { scriptItem })">
+            <a slot="menuItemsBottom" class="item {{scriptIndex + 1 === scriptItems.length ? 'disabled' : ''}}" on:click="onItemDown(event, { scriptItem, scriptIndex })">
                 <i class="angle down icon"></i>
             </a>
         </ScriptItemEdit>
@@ -51,6 +51,11 @@
     ref:scriptSegments {
         min-height: 2em;
     }
+
+    .item:hover .trash.icon {
+        color: #db2828;
+    }
+
 </style>
 
 <script>
@@ -81,40 +86,35 @@
         ondestroy() {
         },
         methods: {
-            onItemUp(event, { scriptItem }) {
+            onItemUp(event, { scriptItem, scriptIndex }) {
                 event.preventDefault();
-
-                const scriptItems = this.get('scriptItems');
-                const index = scriptItems.indexOf(scriptItem);
-                if (index !== 0) {
-                    const target = scriptItems[index - 1];
-                    scriptItems[index - 1] = scriptItems[index];
-                    scriptItems[index] = target;
+                if (scriptIndex !== 0) {
+                    const scriptItems = this.get('scriptItems');
+                    const target = scriptItems[scriptIndex - 1];
+                    scriptItems[scriptIndex - 1] = scriptItems[scriptIndex];
+                    scriptItems[scriptIndex] = target;
 
                     this.set({ scriptItems: scriptItems })
                 }
             },
-            onItemDown(event, { scriptItem }) {
+            onItemDown(event, { scriptItem, scriptIndex }) {
                 event.preventDefault();
 
                 const scriptItems = this.get('scriptItems');
-                const index = scriptItems.indexOf(scriptItem);
-                if (index !== scriptItems.length - 1) {
-                    const target = scriptItems[index + 1];
-                    scriptItems[index + 1] = scriptItems[index];
-                    scriptItems[index] = target;
+                if (scriptIndex !== scriptItems.length - 1) {
+                    const target = scriptItems[scriptIndex + 1];
+                    scriptItems[scriptIndex + 1] = scriptItems[scriptIndex];
+                    scriptItems[scriptIndex] = target;
 
                     this.set({ scriptItems: scriptItems })
                 }
             },
-            onItemDelete(event, { scriptItem }) {
+            onItemDelete(event, { scriptItem, scriptIndex }) {
                 event.preventDefault();
 
-                const scriptItems = this.get('scriptItems');
-                const index = scriptItems.indexOf(scriptItem);
-
-                if (index !== -1) {
-                    scriptItems.splice(index, 1);
+                if (scriptIndex !== -1) {
+                    const scriptItems = this.get('scriptItems');
+                    scriptItems.splice(scriptIndex, 1);
 
                     this.set({scriptItems: scriptItems});
                 }
