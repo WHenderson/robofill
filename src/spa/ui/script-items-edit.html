@@ -1,5 +1,5 @@
 <div>
-    <div ref:add class="ui menu">
+    <div ref:add class="ui compact menu">
         {{#each Object.values(categories) as category}}
         <div class="ui dropdown item" title="{{category.description}}">
             <i class="add icon"></i>
@@ -69,39 +69,40 @@
                 const scriptItems = this.get('scriptItems');
                 const index = scriptItems.indexOf(scriptItem);
                 if (index !== 0) {
-                    this.set({
-                        scriptItems:
-                            scriptItems
-                                .slice(0, index-1)
-                                .concat([scriptItem])
-                                .concat([scriptItems[index-1]])
-                                .concat(scriptItems.slice(index + 1))
-                    })
+                    const target = scriptItems[index - 1];
+                    scriptItems[index - 1] = scriptItems[index];
+                    scriptItems[index] = target;
+
+                    this.set({ scriptItems: scriptItems })
                 }
             },
             onItemDown({ scriptItem }) {
                 const scriptItems = this.get('scriptItems');
                 const index = scriptItems.indexOf(scriptItem);
                 if (index !== scriptItems.length - 1) {
-                    this.set({
-                        scriptItems:
-                            scriptItems
-                                .slice(0, index)
-                                .concat([scriptItems[index + 1]])
-                                .concat([scriptItem])
-                                .concat(scriptItems.slice(index + 2))
-                    })
+                    const target = scriptItems[index + 1];
+                    scriptItems[index + 1] = scriptItems[index];
+                    scriptItems[index] = target;
+
+                    this.set({ scriptItems: scriptItems })
                 }
             },
             onItemDelete({ scriptItem }) {
                 const scriptItems = this.get('scriptItems');
-                this.set({ scriptItems: scriptItems.filter(si => si !== scriptItem )});
+                const index = scriptItems.indexOf(scriptItem);
+
+                if (index !== -1) {
+                    scriptItems.splice(index, 1);
+
+                    this.set({scriptItems: scriptItems});
+                }
             },
             onAdd(item) {
                 const scriptItems = this.get('scriptItems');
-                this.set({
-                    scriptItems: scriptItems.concat([item.template()])
-                })
+
+                scriptItems.splice(scriptItems.length, 0, item.template());
+
+                this.set({ scriptItems: scriptItems });
             }
         },
         events: {

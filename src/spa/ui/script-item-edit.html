@@ -1,5 +1,5 @@
 <div class="ui raised segment anu-flex-row">
-    <div>
+    <div ref:flexLabel>
         <div ref:typeLabel class="ui {{scriptItem.enabled && category.color || 'grey'}} label">{{template.label || scriptItem.type}}</div>
     </div>
     <div class="anu-flex-col anu-flex-content">
@@ -68,7 +68,7 @@
                     {{/each}}
                 </div>
             </div>
-            <div class="ui right vertical icon menu">
+            <div ref:menuArrange class="ui right vertical icon menu anu-item-menu">
                 <a class="item" on:click="fire('up', { scriptItem })">
                     <i class="angle up icon"></i>
                 </a>
@@ -106,7 +106,7 @@
     }
     .anu-flex-content {
         flex-grow: 1;
-        padding: 0.5em;
+        xpadding: 0.5em;
     }
 
     .anu-script-item-menu .item:hover .check.icon {
@@ -116,13 +116,32 @@
         color: #db2828;
     }
 
+    .anu-item-menu {
+        margin: 0.5em;
+    }
+
+    ref:flexLabel {
+        position: relative;
+    }
     ref:typeLabel {
+        position: absolute;
         border-top-left-radius: 0;
         border-top-right-radius: 0;
         border-bottom-left-radius: 0;
 
         writing-mode: tb-rl;
         padding: 0.5em;
+        display: block;
+        height: 100%;
+    }
+
+    ref:menuArrange {
+        margin: 0;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-top: none;
+        border-right: none;
     }
 </style>
 

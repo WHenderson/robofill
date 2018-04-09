@@ -34,7 +34,7 @@
         {{/if}}
     </div>
     <div class="ui bottom attached tab segment" data-tab="script">
-        <ScriptItemsEdit scriptItems="{{script.scriptItems || []}}"/>
+        <ScriptItemsEdit ref:scriptItemsEditor scriptItems="{{script.scriptItems || []}}"/>
     </div>
 
     <div class="ui primary right floated button" on:click="fire('save', { script })">
