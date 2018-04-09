@@ -32,7 +32,17 @@
 
     <div ref:scriptSegments class="ui segments">
         {{#each (scriptItems || []) as scriptItem}}
-        <ScriptItemEdit :scriptItem on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)" />
+        <ScriptItemEdit :scriptItem on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)">
+            <a slot="menuItemsTop" class="item" on:click="onItemUp(event, { scriptItem })">
+                <i class="angle up icon"></i>
+            </a>
+            <a slot="menuItemsBottom" class="item"  on:click="onItemDelete(event, { scriptItem })">
+                <i class="trash icon"></i>
+            </a>
+            <a slot="menuItemsBottom" class="item" on:click="onItemDown(event, { scriptItem })">
+                <i class="angle down icon"></i>
+            </a>
+        </ScriptItemEdit>
         {{/each}}
     </div>
 </div>
@@ -71,7 +81,9 @@
         ondestroy() {
         },
         methods: {
-            onItemUp({ scriptItem }) {
+            onItemUp(event, { scriptItem }) {
+                event.preventDefault();
+
                 const scriptItems = this.get('scriptItems');
                 const index = scriptItems.indexOf(scriptItem);
                 if (index !== 0) {
@@ -82,7 +94,9 @@
                     this.set({ scriptItems: scriptItems })
                 }
             },
-            onItemDown({ scriptItem }) {
+            onItemDown(event, { scriptItem }) {
+                event.preventDefault();
+
                 const scriptItems = this.get('scriptItems');
                 const index = scriptItems.indexOf(scriptItem);
                 if (index !== scriptItems.length - 1) {
@@ -93,7 +107,9 @@
                     this.set({ scriptItems: scriptItems })
                 }
             },
-            onItemDelete({ scriptItem }) {
+            onItemDelete(event, { scriptItem }) {
+                event.preventDefault();
+
                 const scriptItems = this.get('scriptItems');
                 const index = scriptItems.indexOf(scriptItem);
 

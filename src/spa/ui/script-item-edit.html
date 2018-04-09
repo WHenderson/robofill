@@ -69,18 +69,26 @@
                 </div>
             </div>
             <div ref:menuArrange class="ui right vertical icon menu anu-item-menu">
+                <slot name="menuItemsTop"></slot>
+                <!--
                 <a class="item" on:click="fire('up', { scriptItem })">
                     <i class="angle up icon"></i>
                 </a>
-                <a class="item" on:click="onItemEnableToggle(event)">
-                    <i class="{{scriptItem.enabled ? 'check' : 'ban'}} icon"></i>
-                </a>
+                -->
+                <slot name="menuItemEnable">
+                    <a class="item" on:click="onItemEnableToggle(event)">
+                        <i class="{{scriptItem.enabled ? 'check' : 'ban'}} icon"></i>
+                    </a>
+                </slot>
+                <!--
                 <a class="item" on:click="fire('delete', { scriptItem })">
                     <i class="trash icon"></i>
                 </a>
                 <a class="item" on:click="fire('down', { scriptItem })">
                     <i class="angle down icon"></i>
                 </a>
+                -->
+                <slot name="menuItemsBottom"></slot>
             </div>
         </div>
         {{#if template.hasSubScript}}
