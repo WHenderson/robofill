@@ -4,9 +4,12 @@
     <div ref:tabs class="ui top attached tabular menu">
         <a class="item active" data-tab="select">Select</a>
         <a class="item" data-tab="upload">Upload</a>
+
+        <div class="right menu">
         {{#each scriptsEdit as scriptEdit, scriptEditIndex }}
         <a class="item" data-tab="edit{{scriptEditIndex}}">Create / Edit</a>
         {{/each}}
+        </div>
     </div>
 
     <div class="ui bottom attached tab segment active" data-tab="select">
@@ -170,7 +173,12 @@
 
             // Initialise tabs
             $(this.refs.tabs).find('.item')
-                .tab();
+                .tab({ deactivate: 'all' });
+
+            this.observe('scriptsEdit', scriptsEdit => {
+                $(this.refs.tabs).find('.item')
+                    .tab({ deactivate: 'all' });
+            }, { defer: true });
 
             // Initialise script selection dropdown
             $(this.refs.script).dropdown({
@@ -284,46 +292,14 @@
 
                 $(this.refs.tabs).find('.item').tab('change tab', `edit${scriptsEditIndex}`);
             },
-            onEditSave({ script, scriptEdit, component }) {
+            onEditSave({ script, scriptEdit }) {
 
                 Object.assign(script, JSON.parse(JSON.stringify(scriptEdit)));
 
                 const scriptsEdit = this.get('scriptsEdit');
-                //const scriptSelect = this.get('scriptSelect');
                 const scripts = this.get('scripts');
 
                 this.set({ scripts });
-
-                //this.set({ script, scripts, scriptSelect, scriptsEdit });
-
-                /*
-                const editOverwrite = this.get('editOverwrite');
-                const scripts = this.get('scripts');
-                const scriptSelect = this.get('scriptSelect');
-
-                scriptEdit.stamp = (new Date()).toISOString();
-
-                if (editOverwrite) {
-                    for (const [k,v] of Object.entries(scriptEdit)) {
-                        editOverwrite[k] = v;
-                    }
-
-                    this.set({
-                        scripts,
-                        scriptSelect,
-                        scriptEdit
-                    });
-                }
-                else {
-                    scripts.push(scriptEdit);
-                    this.set({
-                        scripts,
-                        scriptSelect: scriptEdit,
-                        scriptEdit,
-                        editOverwrite: scriptEdit
-                    })
-                }
-                */
             },
             onEditClone({ script: scriptEdit }) {
                 this.set({
