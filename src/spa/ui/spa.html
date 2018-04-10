@@ -21,7 +21,7 @@
             {{edit.script.name}}
             {{/if}}
 
-            <div class="ui compact small basic icon button" on:click="onEditClose(event, { edit, editIndex })">
+            <div class="ui compact small basic icon button" on:click="onEditClose({ edit, editIndex })">
                 <i class="window close icon"></i>
             </div>
         </a>
@@ -47,13 +47,14 @@
                 </div>
             </div>
 
+
             {{#if scriptSelect}}
             <div class="ui positive right floated button">
                 <i class="play icon"></i>
                 Execute
             </div>
 
-            <div class="ui negative button" on:click="onDelScript(event, scriptSelect)">
+            <div class="ui negative button" on:click="onScriptDelete(scriptIndex)">
                 <i class="trash icon"></i>
                 Delete
             </div>
@@ -65,8 +66,12 @@
                 <i class="edit icon"></i>
                 Edit
             </div>
-
             {{/if}}
+            <div class="ui button" on:click="onScriptNew()">
+                <i class="star icon"></i>
+                New
+            </div>
+
         </form>
     </div>
     <div class="ui bottom attached tab segment" data-tab="upload">
@@ -116,8 +121,6 @@
 
                 on:save="onEditSave(event, { edit, editIndex })"
                 on:clone="onScriptClone(edit.script)"
-                on:xnew="onEditNew(event, { edit, editIndex })"
-                on:xdelete="onEditDelete(event, { edit, editIndex })"
         />
     </div>
     {{/each}}
@@ -257,13 +260,21 @@
         ondestroy() {
         },
         methods: {
-            onDelScript(event, script) {
-                event.preventDefault();
+            onScriptDelete(scriptIndex) {
+                const scripts = this.get('scripts');
+                const script = scripts[scriptIndex];
 
-                this.set({
-                    scripts: this.get('scripts').filter(s => s !== script),
-                    script: undefined
-                });
+                // unlink scripts being edited
+                const scriptsEdit = this.get('scriptsEdit');
+                const scriptEditIndex = scriptsEdit.findIndex((e) => e.sourceScript === script);
+                if (scriptEditIndex !== -1) {
+                    scriptsEdit[scriptEditIndex].sourceScript = undefined;
+                    this.set({ scriptsEdit });
+                }
+
+                // remove the script
+                scripts.splice(scriptIndex, 1);
+                this.set({ scripts, scriptIndex: -1 });
             },
             onUploadScript(event, script) {
                 event.preventDefault();
@@ -327,6 +338,13 @@
 
                 $(this.refs.tabs).find('.item').tab('change tab', `edit${editIndex}`);
             },
+            onScriptNew() {
+                const scriptsEdit = this.get('scriptsEdit');
+                const editIndex = scriptsEdit.length;
+                scriptsEdit.push({ sourceScript: undefined, script: { name: 'New' } });
+                this.set({scriptsEdit});
+                $(this.refs.tabs).find('.item').tab('change tab', `edit${editIndex}`);
+            },
             onEditSave(event, { edit }) {
                 const scripts = this.get('scripts');
                 const scriptsEdit = this.get('scriptsEdit');
@@ -344,30 +362,10 @@
             onEditClone({ script: scriptEdit }) {
 
             },
-            onEditNew({ script: scriptEdit }) {
-                this.set({
-                    scriptEdit: {
-                        name: '',
-                        description: '',
-                        stamp: (new Date()).toISOString(),
-                        author: ''
-                    },
-                    editOverwrite: undefined
-                });
-            },
-            onEditDelete(event, local) {
+            onEditClose({ edit, editIndex }) {
                 const scriptsEdit = this.get('scriptsEdit');
-
-                if (!event.script) {
-                    // delete new script
-                    scriptsEdit.slice(local.scriptIndex, 1);
-                    this.set({ scriptsEdit });
-                }
-                else {
-                    // discard script changes
-                    Object.assign(event.scriptEdit, local.script);
-                    event.component.set({ scriptEdit: event.scriptEdit });
-                }
+                scriptsEdit.splice(editIndex, 1);
+                this.set({ scriptsEdit });
             }
 
         },

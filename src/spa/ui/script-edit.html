@@ -84,7 +84,7 @@
             return {
                 sourceScript: undefined,
                 originalScript: undefined,
-                script: Object.assign({}, scriptDefaults)
+                script: JSON.parse(JSON.stringify(scriptDefaults))
             }
         },
         helpers: {
@@ -101,7 +101,7 @@
             this.observe('script', script => {
                 const originalScript = this.get('originalScript');
 
-                Object.assign(script, Object.assign({}, scriptDefaults, script));
+                Object.assign(script, Object.assign({}, JSON.parse(JSON.stringify(scriptDefaults)), script));
 
                 if (!originalScript)
                     this.set({ originalScript: JSON.parse(JSON.stringify(script)) });
