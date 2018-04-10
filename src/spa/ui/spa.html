@@ -62,7 +62,7 @@
                 <i class="clone icon"></i>
                 Clone
             </div>
-            <div class="ui button" on:click="onScriptEdit(event, scriptSelect)">
+            <div class="ui button" on:click="onScriptEdit(scriptSelect)">
                 <i class="edit icon"></i>
                 Edit
             </div>
@@ -87,6 +87,7 @@
                     <input ref:uploadText type="text" readonly on:click="onUploadScript(event)">
                     <input ref:uploadFile type="file" id="upload" name="files1" autocomplete="off" style="display:none" on:change="onUploadScriptSelected(event)">
                     <div class="ui button" on:click="onUploadScript(event)">
+                        <i class="upload icon"></i>
                         Select...
                     </div>
                 </div>
@@ -104,12 +105,12 @@
                 <ScriptCard script="{{scriptUpload}}"/>
             </div>
 
-            <div class="ui primary right floated button">
+            <div class="ui primary right floated button" on:click="onUploadSave(scriptUpload)">
                 <i class="save icon"></i>
                 Save
             </div>
 
-            <div class="ui button">
+            <div class="ui button" on:click="onScriptEdit(scriptUpload)">
                 <i class="edit icon"></i>
                 Edit
             </div>
@@ -245,6 +246,8 @@
                     $(this.refs.script).dropdown('clear');
                 else
                     $(this.refs.script).dropdown('set selected', `${scriptIndex}`);
+
+                $(this.refs.script).dropdown('refresh');
             }, { defer: true });
             this.observe('scripts', (scripts, oldScripts) => {
                 if (scripts !== oldScripts)
@@ -330,9 +333,7 @@
 
                 $(this.refs.tabs).find('.item').tab('change tab', `edit${editIndex}`);
             },
-            onScriptEdit(event, script) {
-                event.preventDefault();
-
+            onScriptEdit(script) {
                 const scriptsEdit = this.get('scriptsEdit');
                 let editIndex = scriptsEdit.findIndex((edit) => edit.sourceScript === script);
                 if (editIndex === -1) {
@@ -349,6 +350,14 @@
                 scriptsEdit.push({ sourceScript: undefined, script: { name: 'New' } });
                 this.set({scriptsEdit});
                 $(this.refs.tabs).find('.item').tab('change tab', `edit${editIndex}`);
+            },
+            onUploadSave(script) {
+                const scripts = this.get('scripts');
+                const scriptIndex = scripts.length;
+                scripts.push(script);
+                this.set({ scripts, scriptIndex, scriptUpload: undefined });
+
+                $(this.refs.tabs).find('.item').tab('change tab', `select`);
             },
             onEditSave(event, { edit }) {
                 const scripts = this.get('scripts');
