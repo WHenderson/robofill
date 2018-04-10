@@ -23,6 +23,7 @@
     "rollup-plugin-node-globals": "^1.2.0",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-svelte": "^4.0.0",
+    "store2": "^2.7.0",
     "svelte": "^1.58.3",
     "uglify-js": "^3.3.18",
     "uglifyjs-browser": "^3.0.0"

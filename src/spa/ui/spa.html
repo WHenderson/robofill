@@ -158,37 +158,15 @@
     import Postmate from 'postmate';
     import ScriptCard from './script-card.html'
     import ScriptEdit from './script-edit.html'
-    import deepEqual from 'deep-equal';
+    import deepEqual from 'deep-equal'
+    import store from 'store2';
 
     export default {
         setup(AutoFill) {
         },
         data() {
             return {
-                scripts: [
-                    {
-                        name: 'my name',
-                        author: 'my author',
-                        description: 'my description xxx',
-                        stamp: (new Date()).toISOString(),
-                        scriptItems: [
-                            {
-                                type: 'set value',
-                                selector: '#Q1',
-                                data: 'my text val',
-                                enabled: true
-                            },
-                            {
-                                type: 'set value',
-                                selector: '#Q2',
-                                data: 'my other text val',
-                                enabled: false
-                            }
-
-                        ]
-                    },
-                    { name: 'my lname', author: 'my mauthor', description: 'my ndescription zzz', stamp: (new Date()).toISOString() }
-                ],
+                scripts: [],
                 scriptIndex: -1,
                 //scriptSelect: undefined, // script currently selected
                 scriptUpload: undefined, // script being uploaded
@@ -210,6 +188,10 @@
                 height: () => document.height || document.body.offsetHeight
             });
             this.set({ handshake });
+
+            // Load scripts
+            const scripts = store.get('scripts', this.get('scripts'));
+            this.set({ scripts });
 
             handshake.then((parent) => {
                 this.set({ parent });
@@ -250,6 +232,9 @@
                 $(this.refs.script).dropdown('refresh');
             }, { defer: true });
             this.observe('scripts', (scripts, oldScripts) => {
+                // Save current scripts
+                store.set('scripts', scripts);
+
                 if (scripts !== oldScripts)
                     this.set({ scriptIndex: -1 });
             });
