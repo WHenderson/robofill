@@ -66,6 +66,11 @@
                 <i class="edit icon"></i>
                 Edit
             </div>
+            <a class="ui button" href="data:text/json;charset=utf-8,{{encodeURIComponent(JSON.stringify(scriptSelect, undefined, '  '))}}" download="{{scriptSelect.name}}.json">
+                <i class="download icon"></i>
+                Download
+            </a>
+
             {{/if}}
             <div class="ui button" on:click="onScriptNew()">
                 <i class="star icon"></i>

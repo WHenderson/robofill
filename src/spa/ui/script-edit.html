@@ -52,6 +52,10 @@
         <i class="clone icon"></i>
         Clone
     </div>
+    <a class="ui button" href="data:text/json;charset=utf-8,{{encodeURIComponent(JSON.stringify(script, undefined, '  '))}}" download="{{script.name}}.json">
+        <i class="download icon"></i>
+        Download
+    </a>
 </div>
 
 <style>
