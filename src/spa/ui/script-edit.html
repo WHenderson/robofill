@@ -8,51 +8,47 @@
     <div class="ui bottom attached tab segment active" data-tab="meta">
         <div class="field">
             <label>Name</label>
-            <input type="text" placeholder="Script Name" bind:value="scriptEdit.name">
+            <input type="text" placeholder="Script Name" bind:value="script.name">
         </div>
 
         <div class="field">
             <label>Author</label>
-            <input type="text" placeholder="Author Name" bind:value="scriptEdit.author">
+            <input type="text" placeholder="Author Name" bind:value="script.author">
         </div>
 
         <div class="field">
             <label>Description</label>
-            <textarea type="text" placeholder="Script Description" bind:value="scriptEdit.description"/>
+            <textarea type="text" placeholder="Script Description" bind:value="script.description"/>
         </div>
 
         {{#if script.stamp}}
         <div class="field">
             <div class="ui label">
                 <i class="calendar icon"></i>
-                {{scriptEdit.stamp.replace(/^(.*)T.*$/, '$1')}}
+                {{script.stamp.replace(/^(.*)T.*$/, '$1')}}
                 &nbsp;
                 <i class="clock icon"></i>
-                {{scriptEdit.stamp.replace(/^.*T(.*)$/, '$1')}}
+                {{script.stamp.replace(/^.*T(.*)$/, '$1')}}
             </div>
         </div>
         {{/if}}
     </div>
-    {{#if scriptEdit.scriptItems}}
+    {{#if script.scriptItems}}
     <div class="ui bottom attached tab segment" data-tab="script">
-        <ScriptItemsEdit ref:scriptItemsEditor bind:scriptItems="scriptEdit.scriptItems"/>
+        <ScriptItemsEdit ref:scriptItemsEditor bind:scriptItems="script.scriptItems"/>
     </div>
     {{/if}}
 
 
-    <div class="ui {{deepEqual(script,scriptEdit) ? 'disabled' : ''}} primary right floated button" on:click="fire('save', { script, scriptEdit, component: self })">
+    <div class="ui {{deepEqual(sourceScript,script) ? 'disabled' : ''}} primary right floated button" on:click="fire('save', { sourceScript, script, component: self })">
         <i class="save icon"></i>
         Save
     </div>
-    <div class="ui {{deepEqual(script,scriptEdit) ? 'disabled' : ''}} negative button" on:click="fire('delete', { script, scriptEdit, component: self })">
-        <i class="trash icon"></i>
+    <div class="ui {{deepEqual(script, originalScript) ? 'disabled' : ''}} negative button" on:click="onDiscard(event)" title="discard all changed">
+        <i class="undo icon"></i>
         Discard
     </div>
-    <div class="ui button" on:click="fire('new', { script, scriptEdit, component: self })">
-        <i class="file icon"></i>
-        New
-    </div>
-    <div class="ui button" on:click="fire('clone', { script, scriptEdit, component: self })">
+    <div class="ui button" on:click="fire('clone', { sourceScript, script, component: self })">
         <i class="clone icon"></i>
         Clone
     </div>
@@ -86,8 +82,9 @@
         },
         data() {
             return {
-                script: Object.assign({}, scriptDefaults),
-                scriptEdit: Object.assign({}, scriptDefaults)
+                sourceScript: undefined,
+                originalScript: undefined,
+                script: Object.assign({}, scriptDefaults)
             }
         },
         helpers: {
@@ -100,10 +97,24 @@
                 .tab();
 
             this.set({ self: this });
+
+            this.observe('script', script => {
+                const originalScript = this.get('originalScript');
+
+                Object.assign(script, Object.assign({}, scriptDefaults, script));
+
+                if (!originalScript)
+                    this.set({ originalScript: JSON.parse(JSON.stringify(script)) });
+            });
         },
         ondestroy() {
         },
         methods: {
+            onDiscard(event) {
+                event.preventDefault();
+
+                this.set({ script: JSON.parse(JSON.stringify(this.get('originalScript') || {})) });
+            }
         },
         events: {
         },
