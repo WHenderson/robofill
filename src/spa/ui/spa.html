@@ -4,7 +4,9 @@
     <div ref:tabs class="ui top attached tabular menu">
         <a class="item active" data-tab="select">Select</a>
         <a class="item" data-tab="upload">Upload</a>
-        <a class="item" data-tab="edit">Create / Edit</a>
+        {{#each scriptsEdit as scriptEdit, scriptEditIndex }}
+        <a class="item" data-tab="edit{{scriptEditIndex}}">Create / Edit</a>
+        {{/each}}
     </div>
 
     <div class="ui bottom attached tab segment active" data-tab="select">
@@ -17,7 +19,7 @@
                     <div class="default text">Select Script</div>
                     <div class="menu">
                         {{#each scripts as script, iscript}}
-                        <div class="item" data-value="{{iscript}}" data-text="{{script.name}}">
+                        <div class="item" data-value="{{iscript}}">
                             <ScriptCard :script/>
                         </div>
                         {{/each}}
@@ -26,10 +28,6 @@
             </div>
 
             {{#if scriptSelect}}
-            <div class="ui raised segment">
-                <ScriptCard ref:scriptCard script="{{scriptSelect}}" />
-            </div>
-
             <div class="ui positive right floated button">
                 <i class="play icon"></i>
                 Execute
@@ -89,20 +87,26 @@
             {{/if}}
         </form>
     </div>
-    <div class="ui bottom attached tab segment" data-tab="edit">
+    {{#each scriptsEdit as script, scriptIndex }}
+    <div class="ui bottom attached tab segment" data-tab="edit{{scriptIndex}}">
         <ScriptEdit
                 ref:scriptEdit
-                script="{{scriptEdit || {}}}"
+                bind:script="script"
 
-                on:save="onEditSave(event)"
-                on:clone="onEditClone(event)"
-                on:new="onEditNew(event)"
-                on:delete="onEditDelete(event)"
-            />
+                on:save="onEditSave(event, { script, scriptIndex })"
+                on:xclone="onEditClone(event, { script, scriptIndex })"
+                on:xnew="onEditNew(event, { script, scriptIndex })"
+                on:xdelete="onEditDelete(event, { script, scriptIndex })"
+        />
     </div>
+    {{/each}}
+
 </div>
 
 <style>
+    ref:script .text {
+        display: block;
+    }
 </style>
 
 <script>
@@ -139,14 +143,17 @@
                     },
                     { name: 'my lname', author: 'my mauthor', description: 'my ndescription zzz', stamp: (new Date()).toISOString() }
                 ],
-                scriptSelect: undefined, // script currently selected
+                scriptIndex: -1,
+                //scriptSelect: undefined, // script currently selected
                 scriptUpload: undefined, // script being uploaded
                 scriptEdit: undefined, // script being edited
                 editOverwrite: undefined, // script being overwritten (when saved)
-                uploadError: undefined // error during upload
+                uploadError: undefined, // error during upload
+                scriptsEdit: []
             }
         },
         computed: {
+            scriptSelect: (scripts, scriptIndex) => (scriptIndex === -1 ? undefined : scripts[scriptIndex])
         },
         oncreate() {
             // Initialise cross-frame communication
@@ -171,40 +178,30 @@
                 ignoreCase: true,
                 match: 'text',
                 onChange: (iscript, text, $choice) => {
-                    iscript = parseInt(iscript, 10);
-
-                    const scripts = this.get('scripts');
-                    const scriptSelect = (iscript >= 0 && iscript < scripts.length) ? scripts[iscript] : undefined;
-                    this.set({ scriptSelect });
+                    this.set({ scriptIndex: parseInt(iscript, 10) });
                 }
             });
-            this.observe('scriptSelect', (scriptSelect) => {
-                const index = this.get('scripts').indexOf(scriptSelect);
-                if (index === -1)
+            this.observe('scriptIndex', (scriptIndex, oldScriptIndex) => {
+                if (scriptIndex === -1)
                     $(this.refs.script).dropdown('clear');
                 else
-                    $(this.refs.script).dropdown('set selected', `${index}`);
-
-                $(this.refs.script).dropdown('refresh');
+                    $(this.refs.script).dropdown('set selected', `${scriptIndex}`);
             }, { defer: true });
-            this.observe('scripts', (scripts) => {
-                const index = scripts.indexOf(this.get('scriptSelect'));
-                if (index === -1)
-                    this.set({ scriptSelect: undefined });
+            this.observe('scripts', (scripts, oldScripts) => {
+                if (scripts !== oldScripts)
+                    this.set({ scriptIndex: -1 });
             });
             this.observe('scripts', (scripts) => {
-                const index = scripts.indexOf(this.get('scriptSelect'));
-                if (index === -1) {
+                const scriptIndex = this.get('scriptIndex');
+                if (scriptIndex === -1)
                     $(this.refs.script).dropdown('clear');
-                }
                 else
-                    $(this.refs.script).dropdown('set selected', `${index}`);
-
-                $(this.refs.script).dropdown('refresh');
+                    $(this.refs.script).dropdown('set selected', `${scriptIndex}`);
             }, { defer: true });
 
-            this.set({ scriptSelect: this.get('scripts')[0] });
-
+            // Select first script
+            this.set({ scriptIndex: 0 });
+            $(this.refs.script).dropdown('refresh');
         },
         ondestroy() {
         },
@@ -269,13 +266,37 @@
             onScriptEdit(event, script) {
                 event.preventDefault();
 
+                /*
                 this.set({
                     scriptEdit: JSON.parse(JSON.stringify(script)),
                     editOverwrite: script
                 });
                 $(this.refs.tabs).find('.item').tab('change tab', 'edit');
+                */
+
+                const scriptsEdit = this.get('scriptsEdit');
+                let scriptsEditIndex = scriptsEdit.indexOf(script);
+                if (scriptsEditIndex === -1) {
+                    scriptsEditIndex = scriptsEdit.length;
+                    scriptsEdit.push(script);
+                    this.set({scriptsEdit});
+                }
+
+                $(this.refs.tabs).find('.item').tab('change tab', `edit${scriptsEditIndex}`);
             },
-            onEditSave({ script: scriptEdit }) {
+            onEditSave({ script, scriptEdit, component }) {
+
+                Object.assign(script, JSON.parse(JSON.stringify(scriptEdit)));
+
+                const scriptsEdit = this.get('scriptsEdit');
+                //const scriptSelect = this.get('scriptSelect');
+                const scripts = this.get('scripts');
+
+                this.set({ scripts });
+
+                //this.set({ script, scripts, scriptSelect, scriptsEdit });
+
+                /*
                 const editOverwrite = this.get('editOverwrite');
                 const scripts = this.get('scripts');
                 const scriptSelect = this.get('scriptSelect');
@@ -302,6 +323,7 @@
                         editOverwrite: scriptEdit
                     })
                 }
+                */
             },
             onEditClone({ script: scriptEdit }) {
                 this.set({
@@ -320,20 +342,19 @@
                     editOverwrite: undefined
                 });
             },
-            onEditDelete({ script: scriptEdit }) {
-                const scripts = this.get('scripts');
-                const editOverwrite = this.get('editOverwrite');
+            onEditDelete(event, local) {
+                const scriptsEdit = this.get('scriptsEdit');
 
-                this.set({
-                    scripts: scripts.filter(s => s !== editOverwrite),
-                    scriptEdit: {
-                        name: '',
-                        description: '',
-                        stamp: (new Date()).toISOString(),
-                        author: ''
-                    },
-                    editOverwrite: undefined
-                })
+                if (!event.script) {
+                    // delete new script
+                    scriptsEdit.slice(local.scriptIndex, 1);
+                    this.set({ scriptsEdit });
+                }
+                else {
+                    // discard script changes
+                    Object.assign(event.scriptEdit, local.script);
+                    event.component.set({ scriptEdit: event.scriptEdit });
+                }
             }
 
         },
