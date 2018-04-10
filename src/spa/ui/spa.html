@@ -6,8 +6,13 @@
         <a class="item" data-tab="upload">Upload</a>
 
         <div class="right menu">
-        {{#each scriptsEdit as scriptEdit, scriptEditIndex }}
-        <a class="item" data-tab="edit{{scriptEditIndex}}">Create / Edit</a>
+        {{#each scriptsEdit as edit, editIndex }}
+        <a class="item" data-tab="edit{{editIndex}}">
+            {{edit.script ? edit.script.name : 'New'}}
+            {{#if !deepEqual(edit.script,edit.scriptEdit)}}
+            <i class="star icon"></i>
+            {{/if}}
+        </a>
         {{/each}}
         </div>
     </div>
@@ -90,16 +95,17 @@
             {{/if}}
         </form>
     </div>
-    {{#each scriptsEdit as script, scriptIndex }}
-    <div class="ui bottom attached tab segment" data-tab="edit{{scriptIndex}}">
+    {{#each scriptsEdit as edit, editIndex }}
+    <div class="ui bottom attached tab segment" data-tab="edit{{editIndex}}">
         <ScriptEdit
                 ref:scriptEdit
-                bind:script="script"
+                bind:script="edit.script"
+                bind:scriptEdit="edit.scriptEdit"
 
-                on:save="onEditSave(event, { script, scriptIndex })"
-                on:xclone="onEditClone(event, { script, scriptIndex })"
-                on:xnew="onEditNew(event, { script, scriptIndex })"
-                on:xdelete="onEditDelete(event, { script, scriptIndex })"
+                on:save="onEditSave(event, { edit, editIndex })"
+                on:xclone="onEditClone(event, { edit, editIndex })"
+                on:xnew="onEditNew(event, { edit, editIndex })"
+                on:xdelete="onEditDelete(event, { edit, editIndex })"
         />
     </div>
     {{/each}}
@@ -116,6 +122,7 @@
     import Postmate from 'postmate';
     import ScriptCard from './script-card.html'
     import ScriptEdit from './script-edit.html'
+    import deepEqual from 'deep-equal';
 
     export default {
         setup(AutoFill) {
@@ -157,6 +164,9 @@
         },
         computed: {
             scriptSelect: (scripts, scriptIndex) => (scriptIndex === -1 ? undefined : scripts[scriptIndex])
+        },
+        helpers: {
+            deepEqual
         },
         oncreate() {
             // Initialise cross-frame communication
@@ -274,32 +284,24 @@
             onScriptEdit(event, script) {
                 event.preventDefault();
 
-                /*
-                this.set({
-                    scriptEdit: JSON.parse(JSON.stringify(script)),
-                    editOverwrite: script
-                });
-                $(this.refs.tabs).find('.item').tab('change tab', 'edit');
-                */
-
                 const scriptsEdit = this.get('scriptsEdit');
-                let scriptsEditIndex = scriptsEdit.indexOf(script);
-                if (scriptsEditIndex === -1) {
-                    scriptsEditIndex = scriptsEdit.length;
-                    scriptsEdit.push(script);
+                let editIndex = scriptsEdit.findIndex((edit) => edit.script === script);
+                if (editIndex === -1) {
+                    editIndex = scriptsEdit.length;
+                    scriptsEdit.push({ script, scriptEdit: JSON.parse(JSON.stringify(script)) });
                     this.set({scriptsEdit});
                 }
 
-                $(this.refs.tabs).find('.item').tab('change tab', `edit${scriptsEditIndex}`);
+                $(this.refs.tabs).find('.item').tab('change tab', `edit${editIndex}`);
             },
-            onEditSave({ script, scriptEdit }) {
+            onEditSave(event, { edit }) {
 
-                Object.assign(script, JSON.parse(JSON.stringify(scriptEdit)));
+                Object.assign(edit.script, JSON.parse(JSON.stringify(edit.scriptEdit)));
 
-                const scriptsEdit = this.get('scriptsEdit');
                 const scripts = this.get('scripts');
+                const scriptsEdit = this.get('scriptsEdit');
 
-                this.set({ scripts });
+                this.set({ scripts, scriptsEdit });
             },
             onEditClone({ script: scriptEdit }) {
                 this.set({

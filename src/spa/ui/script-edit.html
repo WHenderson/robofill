@@ -100,20 +100,6 @@
                 .tab();
 
             this.set({ self: this });
-
-            this.observe('script', script => {
-                let scriptEdit = this.get('scriptEdit');
-                if (!scriptEdit)
-                    scriptEdit = Object.assign({}, scriptDefaults);
-
-                if (!script)
-                    script = {};
-
-                for (const [k,v] of Object.entries(JSON.parse(JSON.stringify(script))))
-                    scriptEdit[k] = v;
-
-                this.set({ scriptEdit });
-            });
         },
         ondestroy() {
         },
