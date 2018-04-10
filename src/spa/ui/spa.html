@@ -348,6 +348,8 @@
                 const scripts = this.get('scripts');
                 const scriptsEdit = this.get('scriptsEdit');
 
+                edit.script.stamp = new Date().toISOString();
+
                 if (edit.sourceScript)
                     Object.assign(edit.sourceScript, JSON.parse(JSON.stringify(edit.script)));
                 else {
