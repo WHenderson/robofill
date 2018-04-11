@@ -1,5 +1,5 @@
 import rawCategories from './raw-categories.es6';
-import rawTemplates from './raw-templates.es6';
+import rawTemplates from '../../shared/es6/raw-templates.es6';
 
 function bind(template, category) {
     (category.templates || (category.templates = [])).push(template);

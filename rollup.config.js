@@ -29,13 +29,17 @@ export default [
             }),
             commonjs({
                 include: [
-                    'node_modules/**'
+                    'node_modules/**',
+                    'src/shared/lib/**'
                 ],
                 ignoreGlobal: false
             }),
             globals(),
             babel({
-                exclude: 'node_modules/**'
+                exclude: [
+                    'node_modules/**',
+                    'src/shared/lib/**'
+                ]
             })
         ]
     },
@@ -64,13 +68,17 @@ export default [
             }),
             commonjs({
                 include: [
-                    'node_modules/**'
+                    'node_modules/**',
+                    'src/shared/lib/**'
                 ],
                 ignoreGlobal: false
             }),
             globals(),
             babel({
-                exclude: 'node_modules/**'
+                exclude: [
+                    'node_modules/**',
+                    'src/shared/lib/**'
+                ]
             })
         ]
     },
@@ -100,13 +108,17 @@ export default [
             commonjs({
                 include: [
                     'node_modules/**',
-                    'src/bookmarklet/lib/uglify.js'
+                    'src/bookmarklet/lib/uglify.js',
+                    'src/shared/lib/**'
                 ],
                 ignoreGlobal: false
             }),
             globals(),
             babel({
-                exclude: 'node_modules/**'
+                exclude: [
+                    'node_modules/**',
+                    'src/shared/lib/**'
+                ]
             })
         ]
     }

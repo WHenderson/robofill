@@ -15,10 +15,31 @@
         z-index: 9999;
     ">
     </div>
+    <iframe ref:iframe
+            style="
+                display: block;
+                position: fixed;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 20px;
+                left: 0;
+                right: 0;
+                top: 0;
+                min-width: 800px;
+                width: 80%;
+                height: 95%;
+                border: 1px solid black;
+                opacity: 1.0;
+                filter: alpha(opacity=100);
+                background: #FFF;
+                -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+                -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+                box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+                z-index: 9999;"></iframe>
 </div>
 
 <script>
-    import Postmate from 'postmate';
+    import Bellhop from '../../shared/lib/bellhop';
     import $ from 'jquery';
 
     export default {
@@ -31,49 +52,23 @@
         computed: {
         },
         oncreate() {
-            const handshake = new Postmate({
-                container: this.refs.root,
-                url: this.get('script').src.replace(/(.*)\/inject\/index\.js(?:\?.*)?$/, '$1/spa/index.html')
-            });
-            const frame = $(this.refs.root).find('iframe').get(0);
+            this.refs.iframe.src = this.get('script').src.replace(/(.*)\/inject\/index\.js(?:\?.*)?$/, '$1/spa/index.html');
 
-            frame.style = `
-                display: block;
-                position: fixed;
-                margin-left: auto;
-                margin-right: auto;
-                margin-top: 20px;
-                left: 0;
-                right: 0;
-                top: 0;
-                width: 640px;
-                border: 1px solid black;
-                opacity: 1.0;
-                filter: alpha(opacity=100);
-                background: #FFF;
-                -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
-                -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
-                box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
-                z-index: 9999;
-            `;
+            const pipe = new Bellhop();
+            pipe.connect(this.refs.iframe);
 
-            this.set({ handshake, frame });
+            window.$pipe = pipe;
+            this.set({ pipe });
 
-            handshake.then((child) => {
-                this.set({ child });
 
-                child.get('height').then(height => child.frame.style.height = `${height}px`);
-
-                child.on('some-event', data => console.log('parent on some-event:', data));
-            })
+            pipe.on('script', this.onPipeScript);
+            pipe.on('height', this.onPipeHeight);
         },
         ondestroy() {
             // Destroy all evidence
 
             // Remove communication
-            this.get('handshake').then(child => {
-                child.destroy();
-            });
+            this.get('pipe').destroy();
 
             // Remove container
             this.options.target.remove();
@@ -81,6 +76,12 @@
         methods: {
             onCancel() {
                 this.destroy();
+            },
+            onPipeScript(event) {
+                console.log('onPipeScript', event);
+            },
+            onPipeHeight({ height }) {
+                $(frame).css('min-height', `${height}px`);
             }
         },
         events: {

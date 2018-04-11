@@ -49,7 +49,7 @@
 
 
             {{#if scriptSelect}}
-            <div class="ui positive right floated button">
+            <div class="ui {{(!pipe || !pipe.supported) ? 'disabled': ''}} positive right floated button" on:click="onScriptExecute(scriptSelect)">
                 <i class="play icon"></i>
                 Execute
             </div>
@@ -155,7 +155,8 @@
 </style>
 
 <script>
-    import Postmate from 'postmate';
+    //import Postmate from 'postmate';
+    import Bellhop from '../../shared/lib/bellhop';
     import ScriptCard from './script-card.html'
     import ScriptEdit from './script-edit.html'
     import deepEqual from 'deep-equal'
@@ -173,7 +174,9 @@
                 scriptEdit: undefined, // script being edited
                 editOverwrite: undefined, // script being overwritten (when saved)
                 uploadError: undefined, // error during upload
-                scriptsEdit: []
+                scriptsEdit: [],
+
+                pipe: undefined
             }
         },
         computed: {
@@ -183,21 +186,9 @@
             deepEqual
         },
         oncreate() {
-            // Initialise cross-frame communication
-            const handshake = new Postmate.Model({
-                height: () => document.height || document.body.offsetHeight
-            });
-            this.set({ handshake });
-
             // Load scripts
             const scripts = store.get('scripts', this.get('scripts'));
             this.set({ scripts });
-
-            handshake.then((parent) => {
-                this.set({ parent });
-
-                parent.emit('some-event', 'Woot Woot');
-            });
 
             // Initialise tabs
             const tabSettings = {
@@ -249,6 +240,13 @@
             // Select first script
             this.set({ scriptIndex: 0 });
             $(this.refs.script).dropdown('refresh');
+
+            // Initialise cross-frame communication
+            const pipe = new Bellhop();
+            pipe.connect();
+
+            window.$pipe = pipe;
+            this.set({ pipe })
         },
         ondestroy() {
         },
@@ -335,6 +333,10 @@
                 scriptsEdit.push({ sourceScript: undefined, script: { name: 'New' } });
                 this.set({scriptsEdit});
                 $(this.refs.tabs).find('.item').tab('change tab', `edit${editIndex}`);
+            },
+            onScriptExecute(script) {
+                const pipe = this.get('pipe');
+                const x = pipe.send('script', { script });
             },
             onUploadSave(script) {
                 const scripts = this.get('scripts');

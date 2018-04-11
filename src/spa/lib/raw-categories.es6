@@ -1,4 +1,4 @@
-import { arrayToObject } from './util.es6';
+import { arrayToObject } from '../../shared/es6/util.es6';
 
 export default arrayToObject(
     [
