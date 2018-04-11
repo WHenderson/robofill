@@ -1,4 +1,4 @@
-import ajax from './ajax';
+import ajax from './ajax/index.es6';
 
 const templates = {};
 
@@ -21,8 +21,8 @@ function createInstance() {
 function traverseTemplates(obj, path=[]) {
     for (const [k,v] of Object.entries(obj)) {
         if (typeof v === 'object') {
-            traverse(v, path.concat([key]));
-            return;
+            traverseTemplates(v, path.concat([k]));
+            continue;
         }
         if (typeof v !== 'function' || !v.template)
             continue;

@@ -1,6 +1,5 @@
-import mutated from './mutated'
-import resolve from './resolve'
-import blur from "./blur";
+import mutated from './mutated.es6'
+import resolve from './resolve/index.es6'
 
 export default function click(item) {
     return resolve

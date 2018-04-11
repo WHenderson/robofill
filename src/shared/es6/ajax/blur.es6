@@ -1,6 +1,6 @@
 import Promise from 'bluebird';
 import $ from 'jquery';
-import resolve from "./resolve/index";
+import resolve from "./resolve/index.es6";
 
 export default function blur(item, timeout) {
     return resolve

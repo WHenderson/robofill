@@ -1,5 +1,5 @@
-import mutated from '../mutated';
-import resolve from '../resolve';
+import mutated from '../mutated.es6';
+import resolve from '../resolve/index.es6';
 
 export default function apply(item, value, $action) {
     return resolve

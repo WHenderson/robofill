@@ -1,5 +1,5 @@
-import checkbox from './checkbox'
-import apply from "./apply";
+import checkbox from './checkbox.es6'
+import apply from './apply.es6';
 
 export default function radio(item) {
     return apply(

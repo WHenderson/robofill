@@ -1,4 +1,4 @@
-import apply from "./apply";
+import apply from "./apply.es6";
 
 export default function checkbox(item, state) {
     return apply(

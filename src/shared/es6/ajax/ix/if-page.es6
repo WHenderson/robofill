@@ -1,5 +1,5 @@
-import ifThen from '../if-then'
-import resolve from '../resolve'
+import ifThen from '../if-then.es6'
+import resolve from '../resolve/index.es6'
 
 export default function ifPage(title, $then) {
     return ifThen(

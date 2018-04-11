@@ -1,7 +1,5 @@
 import Promise from 'bluebird';
-import $ from 'jquery';
-import resolve from './resolve'
-import idle from "./idle";
+import resolve from './resolve/index.es6'
 
 export default function focus(item, timeout) {
     return resolve

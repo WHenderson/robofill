@@ -1,8 +1,7 @@
 import Promise from 'bluebird';
-import $ from 'jquery';
-import idle from './idle';
-import focus from './focus';
-import blur from './blur';
+import idle from './idle.es6';
+import focus from './focus.es6';
+import blur from './blur.es6';
 
 export default function mutated(item, $mutate) {
     return idle()

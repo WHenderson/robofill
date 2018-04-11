@@ -38,7 +38,8 @@ export default [
             babel({
                 exclude: [
                     'node_modules/**',
-                    'src/shared/lib/**'
+                    'src/shared/lib/**',
+                    'src/shared/es6/**'
                 ]
             })
         ]
@@ -69,7 +70,8 @@ export default [
             commonjs({
                 include: [
                     'node_modules/**',
-                    'src/shared/lib/**'
+                    'src/shared/lib/**',
+                    'src/shared/es6/**'
                 ],
                 ignoreGlobal: false
             }),
@@ -109,7 +111,8 @@ export default [
                 include: [
                     'node_modules/**',
                     'src/bookmarklet/lib/uglify.js',
-                    'src/shared/lib/**'
+                    'src/shared/lib/**',
+                    'src/shared/es6/**'
                 ],
                 ignoreGlobal: false
             }),

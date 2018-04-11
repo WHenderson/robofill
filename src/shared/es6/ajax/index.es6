@@ -1,9 +1,9 @@
-import idle from './idle'
-import focus from './focus'
-import blur from './blur'
-import click from './click'
-import set from './set'
-import ix from './ix'
+import idle from './idle.es6'
+import focus from './focus.es6'
+import blur from './blur.es6'
+import click from './click.es6'
+import set from './set/index.es6'
+import ix from './ix/index.es6'
 
 export default {
     idle,

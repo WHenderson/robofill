@@ -1,6 +1,6 @@
-import resolve from './resolve'
+import resolve from './resolve/index.es6'
 
-export default ifThen(condition, $then, $else) {
+export default function ifThen(condition, $then, $else) {
     return resolve
         .value(condition)
         .then(($condition) => {
