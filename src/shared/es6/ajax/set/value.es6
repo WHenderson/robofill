@@ -17,12 +17,20 @@ value.template = {
         {
             name: 'item',
             label: 'Selector',
-            resultType: 'selector'
+            resultType: 'selector',
+            default: {
+                type: 'value',
+                value: ''
+            }
         },
         {
             name: 'value',
             label: 'Value',
-            resultType: 'text'
+            resultType: 'text',
+            default: {
+                type: 'value',
+                value: ''
+            }
         }
     ]
 };

@@ -1,0 +1,23 @@
+<div class="field">
+    <label>{{template.label || template.name}}</label>
+    <label class="ui icon button" on:click="fire('change')">
+        <i class="ban icon" title="Value"></i>
+    </label>
+</div>
+
+<script>
+    export default {
+        data() {
+            return {
+                template: undefined,
+                item: undefined
+            }
+        },
+        computed: {
+        },
+        oncreate() {
+        },
+        methods: {
+        }
+    };
+</script>

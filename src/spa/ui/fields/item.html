@@ -1,0 +1,63 @@
+{{#if item.type === 'value'}}
+    {{#if template.resultType === 'boolean'}}
+    <Boolean bind:template="template" bind:item="item" on:change="onChange('formula', { formula: '' })"/>
+    {{elseif template.resultType === 'text'}}
+    <Text bind:template="template" bind:item="item" on:change="onChange('formula', { formula: '' })"/>
+    {{elseif template.resultType === 'selector'}}
+    <Selector bind:template="template" bind:item="item" on:change="onChange('formula', { formula: '' })"/>
+    {{elseif template.resultType === 'int'}}
+    <Int bind:template="template" bind:item="item" on:change="onChange('formula', { formula: '' })"/>
+    {{else}}
+    <h1>wot?</h1>
+    {{/if}}
+{{elseif item.type === 'formula'}}
+    <Formula bind:template="template" bind:item="item" on:change="onChange('code', { code: '' })"/>
+{{elseif item.type === 'code'}}
+    <Code bind:template="template" bind:item="item" on:change="onChange('disabled', {})"/>
+{{else}}
+    <Disabled bind:template="template" bind:item="item" on:change="onChange('value', {})"/>
+{{/if}}
+
+<script>
+    // disabled
+    // value
+    // formula
+    // code
+
+    import Disabled from './disabled.html';
+    import Formula from './formula.html';
+    import Code from './code.html';
+    import Text from './text.html';
+    import Selector from './text.html';
+    import Int from './int.html'
+    import Boolean from './boolean.html'
+
+    export default {
+        data() {
+            return {
+                template: undefined,
+                item: undefined
+            }
+        },
+        oncreate() {
+        },
+        methods: {
+            onChange(toType, defaults) {
+                const item = this.get('item');
+                item.type = toType;
+                Object.assign(item, Object.assign({}, defaults || {}, item));
+
+                this.set({ item });
+            }
+        },
+        components: {
+            Disabled,
+            Formula,
+            Code,
+            Text,
+            Selector,
+            Int,
+            Boolean
+        }
+    };
+</script>

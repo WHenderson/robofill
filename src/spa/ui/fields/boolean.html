@@ -1,0 +1,41 @@
+<div class="field">
+    <label>{{template.label || template.name}}</label>
+    <div class="inline fields">
+        <label class="ui icon button" on:click="fire('change')">
+            <i class="font icon" title="Value"></i>
+        </label>
+        <div class="ui radio checkbox">
+            <input type="radio" checked="{{item.value === true}}" on:click="onSetValue(true)">
+            <label>Checked</label>
+        </div>
+        <div class="ui radio checkbox">
+            <input type="radio" checked="{{item.value === false}}" on:click="onSetValue(false)">
+            <label>Unchecked</label>
+        </div>
+    </div>
+</div>
+
+<script>
+    export default {
+        data() {
+            return {
+                template: undefined,
+                item: undefined
+            }
+        },
+        computed: {
+        },
+        oncreate() {
+        },
+        methods: {
+            onSetValue(value) {
+                const template = this.get('template');
+                const item = this.get('item');
+                item.value = value;
+
+                this.set({ item });
+            }
+        }
+
+    };
+</script>

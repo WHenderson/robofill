@@ -17,12 +17,20 @@ checkbox.template = {
         {
             name: 'item',
             label: 'Selector',
-            resultType: 'selector'
+            resultType: 'selector',
+            default: {
+                type: 'value',
+                value: ''
+            }
         },
         {
             name: 'state',
             label: 'Checked',
-            resultType: 'boolean'
+            resultType: 'boolean',
+            default: {
+                type: 'value',
+                value: true
+            }
         }
     ]
 };

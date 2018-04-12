@@ -60,7 +60,11 @@ idle.template = {
             name: 'timeout',
             label: 'Timeout (ms)',
             optional: true,
-            resultType: 'int'
+            resultType: 'int',
+            default: {
+                type: 'disabled',
+                value: 50
+            }
         }
     ]
 };

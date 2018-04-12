@@ -32,7 +32,7 @@
 
     <div ref:scriptSegments class="ui segments">
         {{#each (scriptItems || []) as scriptItem, scriptIndex}}
-        <ScriptItemEdit :scriptItem on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)">
+        <ScriptItemEdit bind:scriptItem="scriptItem" on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)">
             <a slot="menuItemsTop" class="item {{scriptIndex === 0 ? 'disabled' : ''}}" on:click="onItemUp(event, { scriptItem, scriptIndex })">
                 <i class="angle up icon"></i>
             </a>
@@ -60,7 +60,6 @@
 
 <script>
     import ScriptItemEdit from './script-item-edit.html'
-    //import { templates, categories } from '../lib/category-template-mapping.es6';
     import { templates, categories } from '../../shared/es6/templates.es6';
 
     export default {

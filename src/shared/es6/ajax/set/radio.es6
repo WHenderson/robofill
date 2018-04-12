@@ -18,7 +18,11 @@ radio.template = {
         {
             name: 'item',
             label: 'Selector',
-            resultType: 'selector'
+            resultType: 'selector',
+            default: {
+                type: 'value',
+                value: ''
+            }
         }
     ]
 };

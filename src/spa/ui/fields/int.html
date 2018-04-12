@@ -1,0 +1,43 @@
+<div class="field">
+    <label>{{template.label || template.name}}</label>
+    <div class="ui left action input">
+        <button class="ui icon button" on:click="onChange()">
+            <i class="font icon" title="Value"></i>
+        </button>
+        <input type="text" bind:value="textvalue">
+    </div>
+    {{#if error}}
+    <div class="ui error message">
+        <p>Please enter an integer value</p>
+    </div>
+    {{/if}}
+</div>
+
+<script>
+    export default {
+        data() {
+            return {
+                template: undefined,
+                item: undefined,
+                textvalue: '',
+                error: false
+            }
+        },
+        computed: {
+        },
+        oncreate() {
+            this.observe('textvalue', textvalue => {
+                const item = this.get('item');
+                const value = textvalue.match(/^[0-9]+$/) ? parseInt(textvalue) : NaN;
+                if (!isNaN(value)) {
+                    item.value = value;
+                    this.set({item, error: false});
+                }
+                else
+                    this.set({ error: true });
+            });
+        },
+        methods: {
+        }
+    };
+</script>

@@ -8,10 +8,8 @@ function createInstance() {
     instance.type = this.name;
     instance.enabled = true;
 
-    if (this.fields) {
-        for (const field of this.fields)
-            instance[field.name] = field.default || {};
-    }
+    for (const field of (this.arguments || []))
+        instance[field.name] = field.default || {};
     if (this.hasSubScript)
         instance.scriptItems = [];
 

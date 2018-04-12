@@ -20,7 +20,11 @@ ifPage.template = {
         {
             name: 'title',
             label: 'Title',
-            resultType: 'text'
+            resultType: 'text',
+            default: {
+                type: 'value',
+                value: ''
+            }
         }
     ],
     hasSubScript: true
