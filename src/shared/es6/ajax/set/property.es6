@@ -5,6 +5,7 @@ export default function property(item, name, value) {
         item,
         value,
         ($item, $value) => {
+            console.debug(property.name, $item.selector, $value);
             $item.prop(name, $value).change();
         }
     );

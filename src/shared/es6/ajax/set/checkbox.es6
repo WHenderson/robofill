@@ -5,6 +5,7 @@ export default function checkbox(item, state) {
         item,
         state,
         ($item, $state) => {
+            console.debug(checkbox.name, $item.selector, $state);
             $item.filter('input[type=checkbox]').prop('checked', !$state).keydown().click();
         }
     );

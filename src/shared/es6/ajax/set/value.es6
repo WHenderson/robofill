@@ -5,6 +5,7 @@ export default function value(item, value) {
         item,
         value,
         ($item, $value) => {
+            console.debug('value', $item.selector, $value);
             $item.filter('input, select, textarea').val($value).keydown().change();
         }
     );

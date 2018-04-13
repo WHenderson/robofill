@@ -8,6 +8,5 @@ nextPage.template = {
     label: 'Next Page',
     description: 'Click the "Next Page" button',
     arguments: [
-    ],
-    hasSubScript: true
+    ]
 };

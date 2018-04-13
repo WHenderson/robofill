@@ -6,6 +6,7 @@ export default function radio(item) {
         item,
         undefined,
         ($item) => {
+            console.debug(radio.name, $item.selector);
             $item.filter('input[type=radio]').prop('checked', true).keydown().click();
         }
     );

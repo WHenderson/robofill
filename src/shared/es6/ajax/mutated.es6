@@ -7,13 +7,9 @@ export default function mutated(item, $mutate) {
     return idle()
         .then(() => focus(item))
         .then(() => idle())
-        .then(() => {
-            const res = mutate();
-            idle.lastIdle = undefined;
-            return res;
-        })
+        .then(() => $mutate())
         .then(() => idle())
-        .then(() => blur())
-        .then(() => idle);
+        .then(() => blur(item))
+        .then(() => idle());
 }
 

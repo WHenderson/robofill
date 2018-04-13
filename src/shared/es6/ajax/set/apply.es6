@@ -11,7 +11,7 @@ export default function apply(item, value, $action) {
                     return { $item, $value };
                 });
         })
-        .then(($item, $value) => {
+        .then(({$item, $value}) => {
             return mutated(
                 $item,
                 () => {

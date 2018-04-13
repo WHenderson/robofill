@@ -1,6 +1,6 @@
 import Promise from 'bluebird';
-import $ from 'jquery';
 import resolve from "./resolve/index.es6";
+import focusable from './util/focusable.es6';
 
 export default function blur(item, timeout) {
     return resolve
@@ -13,7 +13,9 @@ export default function blur(item, timeout) {
                 })
         })
         .then(({$item, $timeout}) => {
-            $item = $item.filter(':focusable').first();
+            console.debug(blur.name);
+
+            $item = $item.filter(focusable).first();
             if ($item.length === 0)
                 return Promise.resolve();
 
@@ -30,6 +32,7 @@ export default function blur(item, timeout) {
                 const onAction = () => {
                     if (timeoutId !== undefined)
                         clearTimeout(timeoutId);
+
                     res();
                 };
 

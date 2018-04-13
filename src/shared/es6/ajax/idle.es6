@@ -4,6 +4,8 @@ const $ = window.$; // TODO: Replace this with a custom 'watch for ajax' method
 
 export default function idle(timeout = 50) {
     return new Promise((resolve, reject) => {
+        console.debug(idle.name);
+
         // Timeout Id
         let id = undefined;
 
@@ -17,6 +19,7 @@ export default function idle(timeout = 50) {
 
         // ajax started?
         const onStart = () => {
+            console.debug(idle.name, 'onStart');
             reset();
 
             if ($.active)
@@ -27,14 +30,18 @@ export default function idle(timeout = 50) {
 
         // ajax stopped?
         const onStop = () => {
+            const wait = Math.max(0, timeout - (idle.lastIdle ? ((+new Date()) - idle.lastIdle) : 0));
+
+            console.debug(idle.name, 'onStop', wait);
             reset();
 
             id = setTimeout(
                 () => {
+                    console.debug(idle.name, 'onTimeout');
                     $(document).off('ajaxStart', onStart);
                     resolve();
                 },
-                timeout - (idle.lastIdle ? ((+new Date()) - idle.lastIdle) : 0)
+                wait
             );
             $(document).one('ajaxStart', onStart);
         };
@@ -47,9 +54,13 @@ idle.lastIdle = undefined;
 
 $(document).ajaxStart(() => {
     idle.lastIdle = undefined;
+    console.debug('ajax start');
 });
 $(document).ajaxStop(() => {
-    idle.lastIdle = +new Date();
+    if (!$.active) {
+        idle.lastIdle = +new Date();
+        console.debug('ajax stop', idle.lastIdle);
+    }
 });
 
 idle.template = {

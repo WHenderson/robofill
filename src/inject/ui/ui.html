@@ -16,6 +16,7 @@
     ">
     </div>
     <iframe ref:iframe
+            title="RoboFill"
             style="
                 display: block;
                 position: fixed;
@@ -25,8 +26,8 @@
                 left: 0;
                 right: 0;
                 top: 0;
-                min-width: 800px;
-                width: 80%;
+                max-width: 800px;
+                width: 95%;
                 height: 95%;
                 border: 1px solid black;
                 opacity: 1.0;
@@ -41,6 +42,7 @@
 <script>
     import Bellhop from '../../shared/lib/bellhop';
     import $ from 'jquery';
+    import { compileScript } from '../../shared/es6/compile.es6';
 
     export default {
         setup(AutoFill) {
@@ -58,11 +60,11 @@
             pipe.connect(this.refs.iframe);
 
             window.$pipe = pipe;
-            this.set({ pipe });
+            this.set({ pipe, options: this.options });
 
 
-            pipe.on('script', this.onPipeScript);
-            pipe.on('height', this.onPipeHeight);
+            pipe.on('script', this.onPipeScript.bind(this));
+            pipe.on('height', this.onPipeHeight.bind(this));
         },
         ondestroy() {
             // Destroy all evidence
@@ -79,6 +81,22 @@
             },
             onPipeScript(event) {
                 console.log('onPipeScript', event);
+                const compiled = compileScript(event.data.script);
+
+                // remove the ui
+                const options = this.get('options');
+                const root = options.target;
+                root.remove();
+
+                // run the script
+                compiled({ info: 'my data' })
+                    .catch((error) => {
+                        console.error('error:', error)
+                    })
+                    .finally(() => {
+                        // show the ui
+                        document.body.appendChild(root);
+                    })
             },
             onPipeHeight({ height }) {
                 $(frame).css('min-height', `${height}px`);

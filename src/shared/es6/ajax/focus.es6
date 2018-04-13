@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import resolve from './resolve/index.es6'
+import focusable from './util/focusable.es6';
 
 export default function focus(item, timeout) {
     return resolve
@@ -12,14 +13,16 @@ export default function focus(item, timeout) {
                 })
         })
         .then(({$item, $timeout}) => {
-            $item = $item.filter(':focusable').first();
+            console.debug(focus.name);
+
+            $item = $item.filter(focusable).first();
             if ($item.length === 0)
-                return Promise.resolve($item);
+                return;
 
             $item = $item.first();
 
             if ($item.is(':focus'))
-                return Promise.resolve($item);
+                return;
 
             return new Promise((res, rej) => {
                 let timeoutId = undefined;
