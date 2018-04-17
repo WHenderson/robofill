@@ -31,6 +31,9 @@ export function compileItem(item, path) {
             case 'value':
                 args.push(item[templateArgument.name].value);
                 break;
+            case 'disabled':
+                args.push(undefined);
+                break;
             default:
                 throw new Error(`Unknown argument type ${item[templateArgument.name].type}`);
         }

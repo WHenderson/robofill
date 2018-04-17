@@ -88,7 +88,9 @@ const categories = {
         label: 'Other',
         description: 'Miscellaneous input',
         color: 'purple',
-        templates: []
+        templates: [
+            templates['wait']
+        ]
     }
 };
 

@@ -1,7 +1,7 @@
 <div class="field">
     <label>{{template.label || template.name}}</label>
     <div class="ui left action input">
-        <button class="ui icon button" on:click="onChange()">
+        <button class="ui icon button" on:click="fire('change')">
             <i class="font icon" title="Value"></i>
         </button>
         <input type="text" bind:value="textvalue">
@@ -26,6 +26,8 @@
         computed: {
         },
         oncreate() {
+            const item = this.get('item').value;
+            this.set({ textvalue:  item.value === undefined ? '' : `${item.value}`});
             this.observe('textvalue', textvalue => {
                 const item = this.get('item');
                 const value = textvalue.match(/^[0-9]+$/) ? parseInt(textvalue) : NaN;

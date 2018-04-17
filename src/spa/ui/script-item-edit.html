@@ -79,8 +79,16 @@
             </div>
         </div>
         {{#if template.hasSubScript}}
-        <div class="anu-flex-content">
-            <ScriptItemsEdit bind:scriptItems="scriptItem.scriptItems"/>
+        <div ref:accordion class="ui accordion">
+            <div class="title">
+                <i class="dropdown icon"></i>
+                Script
+            </div>
+            <div class="content">
+                <div class="anu-flex-content">
+                    <ScriptItemsEdit bind:scriptItems="scriptItem.scriptItems"/>
+                </div>
+            </div>
         </div>
         {{/if}}
     </div>
@@ -167,6 +175,8 @@
             category: (template) => template.category || {}
         },
         oncreate() {
+            $(this.refs.accordion)
+                .accordion();
         },
         ondestroy() {
         },

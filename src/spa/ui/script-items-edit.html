@@ -1,37 +1,37 @@
-<div>
-    <div ref:add class="ui menu">
-        {{#each Object.values(categories) as category}}
-        <div class="ui dropdown item" title="{{category.description}}">
-            <i class="add icon"></i>
-            {{category.label}}
-            <i class="dropdown icon"></i>
-            <div class="menu">
-                {{#if category.sub}}
-                    {{#each Object.values(category.sub) as sub}}
-                        <div class="header" title="{{sub.description}}">{{sub.label}}</div>
-                        {{#each (sub.templates || []) as template}}
-                        <div class="item" title="{{template.description}}" on:click="onAdd(template)">
-                            <div class="ui {{sub.color}} empty circular label"></div>
-                            {{template.label}}
-                        </div>
-
-                        {{/each}}
-                    {{/each}}
-                {{else}}
-                    {{#each (category.templates || []) as template}}
+<div ref:root>
+    <div ref:add class="ui top menu">
+    {{#each Object.values(categories) as category}}
+    <div class="ui dropdown item" title="{{category.description}}">
+        <i class="add icon"></i>
+        {{category.label}}
+        <i class="dropdown icon"></i>
+        <div class="menu">
+            {{#if category.sub}}
+                {{#each Object.values(category.sub) as sub}}
+                    <div class="header" title="{{sub.description}}">{{sub.label}}</div>
+                    {{#each (sub.templates || []) as template}}
                     <div class="item" title="{{template.description}}" on:click="onAdd(template)">
-                        <div class="ui {{category.color}} empty circular label"></div>
+                        <div class="ui {{sub.color}} empty circular label"></div>
                         {{template.label}}
                     </div>
+
                     {{/each}}
-                {{/if}}
-            </div>
+                {{/each}}
+            {{else}}
+                {{#each (category.templates || []) as template}}
+                <div class="item" title="{{template.description}}" on:click="onAdd(template)">
+                    <div class="ui {{category.color}} empty circular label"></div>
+                    {{template.label}}
+                </div>
+                {{/each}}
+            {{/if}}
         </div>
-        {{/each}}
     </div>
+    {{/each}}
+</div>
 
     <div ref:scriptSegments class="ui segments">
-        {{#each (scriptItems || []) as scriptItem, scriptIndex}}
+        {{#each scriptItems as scriptItem, scriptIndex}}
         <ScriptItemEdit bind:scriptItem="scriptItem" on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)">
             <a slot="menuItemsTop" class="item {{scriptIndex === 0 ? 'disabled' : ''}}" on:click="onItemUp(event, { scriptItem, scriptIndex })">
                 <i class="angle up icon"></i>
@@ -82,6 +82,14 @@
 
             $(this.refs.add).find('.ui.dropdown')
                 .dropdown();
+
+            /* TODO
+            $(this.refs.add)
+                .sticky({
+                    context: $(this.refs.root),
+                    observeChanges: true
+                });
+                */
         },
         ondestroy() {
         },
@@ -121,8 +129,7 @@
             },
             onAdd(item) {
                 const scriptItems = this.get('scriptItems');
-
-                scriptItems.splice(scriptItems.length, 0, item.template());
+                scriptItems.push(item.template());
 
                 this.set({ scriptItems: scriptItems });
             }
