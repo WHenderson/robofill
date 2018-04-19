@@ -120,8 +120,6 @@
                 new Promise(
                     (resolve, reject) => {
                         const onMove = (event) => {
-                            console.log('move', event);
-
                             if ($element) {
                                 $element.css('outline', '');
                                 $element = undefined;
@@ -135,7 +133,6 @@
                             event.preventDefault();
 
                             $(document).off('mousemove', onMove);
-                            console.log('down', event);
 
                             if ($element) {
                                 $element.css('outline', '');
@@ -151,7 +148,6 @@
                         $(document).one('mousedown', onDown);
                     })
                     .then((id) => {
-                        console.log('found', id);
                         const pipe = this.get('pipe');
                         pipe.send('select', { id });
                     })
