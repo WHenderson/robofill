@@ -1,5 +1,24 @@
 import Promise from 'bluebird';
 import ajax from './ajax/index.es6';
+import util from './util/index.es6';
+
+export function compileFunction(script) {
+    return (new Function('ajax', 'util', 'data', script)).bind(undefined, ajax, util);
+}
+export function compileFormula(script) {
+    return compileFunction(`return (${script});`);
+}
+export function debugFunction(name, func) {
+    return function (...args) {
+        try {
+            return func.apply(func, args);
+        }
+        catch (ex) {
+            console.error(name, ex, func);
+            throw ex;
+        }
+    }
+}
 
 export function compileItem(item, path) {
     // Skip disabled items
@@ -31,6 +50,12 @@ export function compileItem(item, path) {
             case 'value':
                 args.push(item[templateArgument.name].value);
                 break;
+            case 'formula':
+                args.push(debugFunction(templateArgument.name, compileFormula(item[templateArgument.name].formula)));
+                break;
+            case 'function':
+                args.push(debugFunction(templateArgument.name, compileFunction(item[templateArgument.name].function)));
+                break;
             case 'disabled':
                 args.push(undefined);
                 break;
@@ -53,7 +78,19 @@ export function compileItem(item, path) {
                 return data;
             })
             .then((data) => {
-                return action.apply(undefined, args)
+                let p = Promise.resolve([]);
+                for (const arg of args) {
+                    p = ((arg) => p.then(
+                        (resolvedArgs) =>
+                            Promise
+                                .resolve(arg)
+                                .then(arg => (typeof arg === 'function' ? arg(data) : arg))
+                                .then(arg => resolvedArgs.concat([arg]))
+                    ))(arg);
+                }
+
+                return p
+                    .then((args) => action.apply(undefined, args));
             });
     };
 }

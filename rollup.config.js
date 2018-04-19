@@ -53,7 +53,8 @@ export default [
         },
         plugins: [
             copy({
-                'src/spa/scaffold/index.html' : 'dist/spa/index.html'
+                'src/spa/scaffold/index.html' : 'dist/spa/index.html',
+                'src/spa/scaffold/example.html' : 'dist/spa/example.html'
             }),
             builtins(),
             svelte({

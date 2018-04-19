@@ -1,6 +1,5 @@
 import Promise from 'bluebird';
-
-const $ = window.$; // TODO: Replace this with a custom 'watch for ajax' method
+import $ from '../jquery.es6';
 
 export default function idle(timeout = 50) {
     return new Promise((resolve, reject) => {
