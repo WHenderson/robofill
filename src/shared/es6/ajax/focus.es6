@@ -2,7 +2,7 @@ import Promise from 'bluebird';
 import resolve from './resolve/index.es6'
 import focusable from './util/focusable.es6';
 
-export default function focus(item, timeout) {
+export default function focus(item, timeout=1000) {
     return resolve
         .item(item)
         .then(($item) => {
@@ -29,7 +29,7 @@ export default function focus(item, timeout) {
 
                 const onTimeout = () => {
                     $item.off('focus', onAction);
-                    rej();
+                    rej(new Error('Timeout waiting for focus'));
                 };
                 const onAction = () => {
                     if (timeoutId !== undefined)
