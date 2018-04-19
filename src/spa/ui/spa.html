@@ -49,7 +49,7 @@
 
 
             {{#if scriptSelect}}
-            <div class="ui {{(!pipe || !pipe.supported) ? 'disabled': ''}} positive right floated button" on:click="onScriptExecute(scriptSelect)">
+            <div class="ui {{(!$pipe || !$pipe.supported) ? 'disabled': ''}} positive right floated button" on:click="onScriptExecute(scriptSelect)">
                 <i class="play icon"></i>
                 Execute
             </div>
@@ -157,9 +157,10 @@
 <script>
     //import Postmate from 'postmate';
     import Bellhop from '../../shared/lib/bellhop';
-    import ScriptCard from './script-card.html'
-    import ScriptEdit from './script-edit.html'
-    import deepEqual from 'deep-equal'
+    import ScriptCard from './script-card.html';
+    import ScriptEdit from './script-edit.html';
+    import { Store } from 'svelte/store.js';
+    import deepEqual from 'deep-equal';
     import store from 'store2';
 
     export default {
@@ -246,7 +247,7 @@
             pipe.connect();
 
             window.$pipe = pipe;
-            this.set({ pipe })
+            this.store.set({ pipe })
         },
         ondestroy() {
         },
@@ -335,7 +336,7 @@
                 $(this.refs.tabs).find('.item').tab('change tab', `edit${editIndex}`);
             },
             onScriptExecute(script) {
-                const pipe = this.get('pipe');
+                const pipe = this.store.get('pipe');
                 const x = pipe.send('script', { script });
             },
             onUploadSave(script) {
@@ -377,6 +378,7 @@
         components: {
             ScriptCard,
             ScriptEdit
-        }
+        },
+        store: () => new Store({})
     };
 </script>

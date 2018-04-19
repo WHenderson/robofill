@@ -1,14 +1,19 @@
 <div class="field">
     <label>{{template.label || template.name}}</label>
-    <div class="ui left action input">
+    <div class="ui action input">
         <button class="ui icon button" on:click="onChange()">
             <i class="font icon" title="Value"></i>
         </button>
+
         {{#if !multiline}}
         <input type="text" bind:value="item.value">
         {{else}}
         <textarea type="text" bind:value="item.value"></textarea>
         {{/if}}
+
+        <button class="ui icon button">
+            <i class="eye dropper icon" title="Picker"></i>
+        </button>
     </div>
 </div>
 

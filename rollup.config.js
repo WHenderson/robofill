@@ -58,10 +58,11 @@ export default [
             }),
             builtins(),
             svelte({
-                include: 'src/spa/ui/**.html',
+                include: 'src/spa/ui/**/*.html',
                 generate: 'iife',
                 css: true,
-                cascade: false
+                cascade: false,
+                store: true
             }),
             resolve({
                 jsnext: true,
