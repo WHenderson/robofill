@@ -219,7 +219,14 @@
                 if (scriptIndex === -1)
                     $(this.refs.script).dropdown('clear');
                 else
+                if (scriptIndex === 0)
                     $(this.refs.script).dropdown('set selected', `${scriptIndex}`);
+                else {
+                    const scripts = this.get('scripts');
+                    scripts.unshift(scripts.splice(scriptIndex, 1)[0]);
+                    this.set({ scriptIndex: 0, scripts});
+                    return;
+                }
 
                 $(this.refs.script).dropdown('refresh');
             }, { defer: true });
