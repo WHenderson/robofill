@@ -11,7 +11,7 @@
         <textarea type="text" bind:value="item.value"></textarea>
         {{/if}}
 
-        <button class="ui icon button">
+        <button class="ui {{(!$pipe || !$pipe.supported) ? 'disabled': ''}} icon button" on:click="onSelect()">
             <i class="eye dropper icon" title="Picker"></i>
         </button>
     </div>
@@ -37,6 +37,21 @@
                     this.fire('change');
                 else
                     this.set({ multiline: true });
+            },
+            onSelect() {
+                const pipe = this.store.get('pipe');
+                pipe.fetch(
+                    'select',
+                    ({ type, data }) => {
+                        if (data && typeof data.id === 'string') {
+                            const item = this.get('item');
+                            item.value = `#${data.id}`;
+                            this.set({ item });
+                        }
+                    },
+                    {},
+                    true
+                );
             }
         }
     };

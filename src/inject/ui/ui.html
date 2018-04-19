@@ -64,6 +64,7 @@
 
 
             pipe.on('script', this.onPipeScript.bind(this));
+            pipe.on('select', this.onPipeSelect.bind(this));
             pipe.on('height', this.onPipeHeight.bind(this));
         },
         ondestroy() {
@@ -76,6 +77,21 @@
             this.options.target.remove();
         },
         methods: {
+            hide() {
+                // remove the ui
+                //const options = this.get('options');
+                //const root = options.target;
+                //root.remove();
+                $(this.refs.root).css('display', 'none');
+            },
+            show() {
+                // show the ui
+                //const options = this.get('options');
+                //const root = options.target;
+                //document.body.appendChild(root);
+                $(this.refs.root).css('display', '');
+            },
+
             onCancel() {
                 this.destroy();
             },
@@ -83,10 +99,7 @@
                 console.log('onPipeScript', event);
                 const compiled = compileScript(event.data.script);
 
-                // remove the ui
-                const options = this.get('options');
-                const root = options.target;
-                root.remove();
+                this.hide();
 
                 // run the script
                 compiled({ info: 'my data' })
@@ -94,9 +107,57 @@
                         console.error('error:', error)
                     })
                     .finally(() => {
-                        // show the ui
-                        document.body.appendChild(root);
+                        this.show();
                     })
+            },
+            onPipeSelect(event) {
+                console.log('onPipeSelect', event);
+
+                this.hide();
+
+                let $element;
+
+                new Promise(
+                    (resolve, reject) => {
+                        const onMove = (event) => {
+                            console.log('move', event);
+
+                            if ($element) {
+                                $element.css('outline', '');
+                                $element = undefined;
+                            }
+
+                            const $target = $(event.target);
+                            if ($target.attr('id'))
+                                $element = $target.css('outline', '5px solid red');
+                        };
+                        const onDown = (event) => {
+                            event.preventDefault();
+
+                            $(document).off('mousemove', onMove);
+                            console.log('down', event);
+
+                            if ($element) {
+                                $element.css('outline', '');
+                                $element = undefined;
+                            }
+
+                            const $target = $(event.target);
+
+                            resolve($target.attr('id'));
+                        };
+
+                        $(document).on('mousemove', onMove);
+                        $(document).one('mousedown', onDown);
+                    })
+                    .then((id) => {
+                        console.log('found', id);
+                        const pipe = this.get('pipe');
+                        pipe.send('select', { id });
+                    })
+                    .finally(() => {
+                        this.show();
+                    });
             },
             onPipeHeight({ height }) {
                 $(frame).css('min-height', `${height}px`);
