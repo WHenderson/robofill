@@ -338,7 +338,7 @@
             onScriptNew() {
                 const scriptsEdit = this.get('scriptsEdit');
                 const editIndex = scriptsEdit.length;
-                scriptsEdit.push({ sourceScript: undefined, script: { name: 'New' } });
+                scriptsEdit.push({ sourceScript: undefined, script: { name: 'New', scriptItems: [] } });
                 this.set({scriptsEdit});
                 $(this.refs.tabs).find('.item').tab('change tab', `edit${editIndex}`);
             },
