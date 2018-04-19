@@ -9,7 +9,7 @@ function createInstance() {
     instance.enabled = true;
 
     for (const field of (this.arguments || []))
-        instance[field.name] = field.default || {};
+        instance[field.name] = JSON.parse(JSON.stringify(field.default || {}));
     if (this.hasSubScript)
         instance.scriptItems = [];
 

@@ -8,63 +8,6 @@
                 <div class="ui form error">
                     {{#each template.arguments as argument}}
                     <Item bind:template="argument" bind:item="scriptItem[argument.name]" />
-
-                    <!--
-                    {{#if ['text', 'trilean', 'selector'].includes(argument.resultType) }}
-                        {{#if argument.resultType === 'boolean' && scriptItem[argument.name].type === 'value'}}
-                        <div class="field">
-                            <label>{{argument.label || name}}</label>
-                            <div class="inline fields">
-                                <div class="field">
-                                    <label class="ui icon button" on:click="onChangeFieldType(event, argument, scriptItem[argument.name])">
-                                        <i class="font icon" title="Value"></i>
-                                    </label>
-                                    <div class="ui radio checkbox">
-                                        <input type="radio" checked="{{scriptItem[argument.name].value === true}}" on:click="onSetFieldValue(event, argument, scriptItem[argument.name], true)">
-                                        <label>Checked</label>
-                                    </div>
-                                    <div class="ui radio checkbox">
-                                        <input type="radio" checked="{{scriptItem[argument.name].value === false}}" on:click="onSetFieldValue(event, argument, scriptItem[argument.name], false)">
-                                        <label>Unchecked</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {{else}}
-                        <div class="field">
-                            <label>{{argument.label || name}}</label>
-                            <div class="ui left action input">
-                                <button class="ui icon button" on:click="onChangeFieldType(event, argument, scriptItem[argument.name])">
-                                    {{#if scriptItem[argument.name].type === 'formula'}}
-                                    <i class="superscript icon" title="Formula"></i>
-                                    {{elseif scriptItem[argument.name].type === 'code'}}
-                                    <i class="code icon" title="Code"></i>
-                                    {{else}}
-                                    <i class="font icon" title="Value"></i>
-                                    {{/if}}
-                                </button>
-                                {{#if multiline}}
-                                    {{#if scriptItem[argument.name].type === 'value'}}
-                                    <textarea type="text" placeholder="{{argument.label || name}}" bind:value="scriptItem[argument.name].value"></textarea>
-                                    {{elseif scriptItem[argument.name].type === 'formula'}}
-                                    <textarea type="text" placeholder="{{argument.label || name}}" bind:value="scriptItem[argument.name].formula"></textarea>
-                                    {{elseif scriptItem[argument.name].type === 'code'}}
-                                    <textarea type="text" placeholder="{{argument.label || name}}" bind:value="scriptItem[argument.name].code"></textarea>
-                                    {{/if}}
-                                {{else}}
-                                    {{#if scriptItem[argument.name].type === 'value'}}
-                                    <input type="text" placeholder="{{argument.label || name}}" bind:value="scriptItem[argument.name].value">
-                                    {{elseif scriptItem[argument.name].type === 'formula'}}
-                                    <input type="text" placeholder="{{argument.label || name}}" bind:value="scriptItem[argument.name].formula">
-                                    {{elseif scriptItem[argument.name].type === 'code'}}
-                                    <input type="text" placeholder="{{argument.label || name}}" bind:value="scriptItem[argument.name].code">
-                                    {{/if}}
-                                {{/if}}
-                            </div>
-                        </div>
-                        {{/if}}
-                    {{/if}}
-                    -->
                     {{/each}}
                 </div>
             </div>
