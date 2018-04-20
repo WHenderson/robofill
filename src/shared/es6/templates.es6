@@ -44,7 +44,8 @@ const categories = {
         description: 'Conditional execution',
         color: 'green',
         templates: [
-            templates['ix.ifPage']
+            templates['ix.ifPage'],
+            templates['ix.ifExists']
         ]
     },
     'input': {
