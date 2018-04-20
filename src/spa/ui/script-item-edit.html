@@ -1,4 +1,4 @@
-<div class="ui raised segment anu-flex-row">
+<div class="ui raised {{!editing ? 'secondary' : ''}} segment anu-flex-row" tabindex="0" on:focus="fire('edit', { scriptItem })">
     <div ref:flexLabel>
         <div ref:typeLabel class="ui {{scriptItem.enabled && category.color || 'grey'}} label">{{template.label || scriptItem.type}}</div>
     </div>
@@ -29,7 +29,7 @@
             </div>
             <div class="content">
                 <div class="anu-flex-content">
-                    <ScriptItemsEdit bind:scriptItems="scriptItem.scriptItems"/>
+                    <ScriptItemsEdit bind:scriptItems="scriptItem.scriptItems" bind:editing="editing" on:edit="fire('edit', { scriptItem })"/>
                 </div>
             </div>
         </div>
@@ -106,7 +106,8 @@
         data() {
             return {
                 scriptItem: {},
-                multiline: false
+                multiline: false,
+                editing: false
             }
         },
         helpers: {

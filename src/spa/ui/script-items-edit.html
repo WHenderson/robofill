@@ -32,7 +32,7 @@
 
     <div ref:scriptSegments class="ui segments">
         {{#each scriptItems as scriptItem, scriptIndex}}
-        <ScriptItemEdit bind:scriptItem="scriptItem" on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)">
+        <ScriptItemEdit bind:scriptItem="scriptItem" on:up="onItemUp(event)" on:down="onItemDown(event)" on:delete="onItemDelete(event)" on:edit="onItemEdit(event)" editing="{{editingItem === scriptItem}}">
             <a slot="menuItemsTop" class="item {{scriptIndex === 0 ? 'disabled' : ''}}" on:click="onItemUp(event, { scriptItem, scriptIndex })">
                 <i class="angle up icon"></i>
             </a>
@@ -67,7 +67,8 @@
         },
         data() {
             return {
-                scriptItems: []
+                scriptItems: [],
+                editingItem: undefined
             }
         },
         helpers: {
@@ -82,6 +83,13 @@
 
             $(this.refs.add).find('.ui.dropdown')
                 .dropdown();
+
+            this.observe('editing', editing => {
+                if (editing)
+                    return;
+
+                this.set({ editingItem: undefined });
+            });
 
             /* TODO
             $(this.refs.add)
@@ -132,6 +140,10 @@
                 scriptItems.push(item.template());
 
                 this.set({ scriptItems: scriptItems });
+            },
+            onItemEdit({ scriptItem }) {
+                this.set({ editingItem: scriptItem });
+                this.fire('edit');
             }
         },
         events: {
