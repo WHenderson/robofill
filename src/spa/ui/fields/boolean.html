@@ -1,3 +1,12 @@
+{{#if !editing}}
+<div ref:readonly class="inline field">
+    <label>
+        {{template.label || template.name}}
+        <i class="bordered font icon" title="Value"></i>
+    </label>
+    <p ref:value>{{#if item.value}}<i class="check circle outline icon"></i>Checked{{else}}<i class="circle outline icon"></i>Unchecked{{/if}}</p>
+</div>
+{{else}}
 <div class="field">
     <label>{{template.label || template.name}}</label>
     <div class="inline fields">
@@ -14,6 +23,7 @@
         </div>
     </div>
 </div>
+{{/if}}
 
 <script>
     export default {

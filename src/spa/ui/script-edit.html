@@ -35,7 +35,7 @@
     </div>
     {{#if script.scriptItems}}
     <div class="ui bottom attached tab segment" data-tab="script">
-        <ScriptItemsEdit ref:scriptItemsEditor bind:scriptItems="script.scriptItems"/>
+        <ScriptItemsEdit ref:scriptItemsEditor bind:scriptItems="script.scriptItems" editing="true"/>
     </div>
     {{/if}}
 

@@ -1,4 +1,4 @@
-<div class="ui raised {{!editing ? 'secondary' : ''}} segment anu-flex-row" tabindex="0" on:focus="fire('edit', { scriptItem })">
+<div ref:segment class="ui raised {{!editing ? 'secondary' : ''}} segment anu-flex-row" tabindex="0" on:focus="fire('edit', { scriptItem })">
     <div ref:flexLabel>
         <div ref:typeLabel class="ui {{scriptItem.enabled && category.color || 'grey'}} label">{{template.label || scriptItem.type}}</div>
     </div>
@@ -7,10 +7,11 @@
             <div ref:item class="anu-flex-content">
                 <div class="ui form error">
                     {{#each template.arguments as argument}}
-                    <Item bind:template="argument" bind:item="scriptItem[argument.name]" />
+                    <Item bind:template="argument" bind:item="scriptItem[argument.name]" editing="{{editing}}"/>
                     {{/each}}
                 </div>
             </div>
+            {{#if editing}}
             <div ref:menuArrange class="ui right vertical icon menu anu-item-menu">
                 <slot name="menuItemsTop"></slot>
                 <slot name="menuItemEnable">
@@ -20,17 +21,12 @@
                 </slot>
                 <slot name="menuItemsBottom"></slot>
             </div>
+            {{/if}}
         </div>
         {{#if template.hasSubScript}}
-        <div ref:accordion class="ui accordion">
-            <div class="title">
-                <i class="dropdown icon"></i>
-                Script
-            </div>
-            <div class="content">
-                <div class="anu-flex-content">
-                    <ScriptItemsEdit bind:scriptItems="scriptItem.scriptItems" bind:editing="editing" on:edit="fire('edit', { scriptItem })"/>
-                </div>
+        <div class="content">
+            <div class="anu-flex-content">
+                <ScriptItemsEdit bind:scriptItems="scriptItem.scriptItems" bind:editing="editing" on:edit="fire('edit', { scriptItem })"/>
             </div>
         </div>
         {{/if}}
@@ -58,6 +54,10 @@
         padding-top: 0.5em;
         padding-left: 0.5em;
         padding-right: 0.5em;
+    }
+
+    ref:segment {
+        min-height: 5em;
     }
 
     .anu-item-menu .item:hover .check.icon {
@@ -91,6 +91,18 @@
         border-bottom-right-radius: 0;
         border-top: none;
         border-right: none;
+    }
+
+    .ui.form :global(.inline.field > p) {
+        font-weight: normal;
+        white-space: pre;
+    }
+
+    .ui.form :global(.inline.field > label) {
+        min-width: 8em;
+    }
+    .ui.form :global(.inline.field > label > i) {
+        float: right;
     }
 </style>
 

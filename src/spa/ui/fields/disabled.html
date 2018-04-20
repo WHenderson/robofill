@@ -1,9 +1,18 @@
+{{#if !editing}}
+<div class="inline field">
+    <label>
+        {{template.label || template.name}}
+        <i class="bordered ban icon" title="No Value, using default"></i>
+    </label>
+</div>
+{{else}}
 <div class="field">
     <label>{{template.label || template.name}}</label>
     <label class="ui icon button" on:click="fire('change')">
         <i class="ban icon" title="Value"></i>
     </label>
 </div>
+{{/if}}
 
 <script>
     export default {

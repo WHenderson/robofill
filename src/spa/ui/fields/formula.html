@@ -1,4 +1,15 @@
-<div class="field">
+{{#if !editing}}
+<div ref:rootRead class="inline field">
+    <label>
+        {{template.label || template.name}}
+        <i class="bordered superscript icon" title="Value"></i>
+    </label>
+    <p ref:value>
+        {{item.code}}
+    </p>
+</div>
+{{else}}
+<div ref:rootEdit class="field">
     <label>{{template.label || template.name}}</label>
     <div class="ui left action input">
         <button class="ui icon button" on:click="onChange()">
@@ -11,6 +22,15 @@
         {{/if}}
     </div>
 </div>
+{{/if}}
+
+<style>
+    ref:rootRead > p,
+    ref:rootEdit > .ui.input > input,
+    ref:rootEdit > .ui.input > textarea {
+        font-family: monospace;
+    }
+</style>
 
 <script>
     export default {

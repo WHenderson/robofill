@@ -1,5 +1,5 @@
 <div ref:root>
-    <div ref:add class="ui top menu">
+    <div ref:add style="{{!editing ? 'display: none' : ''}}" class="ui top menu">
     {{#each Object.values(categories) as category}}
     <div class="ui dropdown item" title="{{category.description}}">
         <i class="add icon"></i>

@@ -1,3 +1,12 @@
+{{#if !editing}}
+<div ref:readonly class="inline field">
+    <label>
+        {{template.label || template.name}}
+        <i class="bordered font icon" title="Value"></i>
+    </label>
+    <p ref:value>{{item.value}}</p>
+</div>
+{{else}}
 <div class="field">
     <label>{{template.label || template.name}}</label>
     <div class="ui action input">
@@ -16,6 +25,7 @@
         </button>
     </div>
 </div>
+{{/if}}
 
 <script>
     export default {
