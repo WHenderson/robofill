@@ -65,6 +65,7 @@
 
             pipe.on('script', this.onPipeScript.bind(this));
             pipe.on('select', this.onPipeSelect.bind(this));
+            pipe.on('selectText', this.onPipeSelectText.bind(this));
             pipe.on('height', this.onPipeHeight.bind(this));
         },
         ondestroy() {
@@ -150,6 +151,50 @@
                     .then((id) => {
                         const pipe = this.get('pipe');
                         pipe.send('select', { id });
+                    })
+                    .finally(() => {
+                        this.show();
+                    });
+            },
+            onPipeSelectText(event) {
+                console.log('onPipeSelectText', event);
+
+                this.hide();
+
+                let $element;
+
+                new Promise(
+                    (resolve, reject) => {
+                        const onMove = (event) => {
+                            if ($element) {
+                                $element.css('outline', '');
+                                $element = undefined;
+                            }
+
+                            const $target = $(event.target);
+                            $element = $target.css('outline', '5px solid red');
+                        };
+                        const onDown = (event) => {
+                            event.preventDefault();
+
+                            $(document).off('mousemove', onMove);
+
+                            if ($element) {
+                                $element.css('outline', '');
+                                $element = undefined;
+                            }
+
+                            const $target = $(event.target);
+
+                            resolve($target.text());
+                        };
+
+                        $(document).on('mousemove', onMove);
+                        $(document).one('mousedown', onDown);
+                    })
+                    .then((text) => {
+                        const pipe = this.get('pipe');
+                        pipe.send('selectText', { text });
                     })
                     .finally(() => {
                         this.show();

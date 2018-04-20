@@ -9,15 +9,20 @@
 {{else}}
 <div class="field">
     <label>{{template.label || template.name}}</label>
-    <div class="ui left action input">
+    <div class="ui action input">
         <button class="ui icon button" on:click="onChange()">
             <i class="font icon" title="Value"></i>
         </button>
+
         {{#if !multiline}}
         <input type="text" bind:value="item.value">
         {{else}}
         <textarea type="text" bind:value="item.value"></textarea>
         {{/if}}
+
+        <button class="ui {{(!$pipe || !$pipe.supported) ? 'disabled': ''}} icon button" on:click="onSelect()">
+            <i class="eye dropper icon" title="Picker"></i>
+        </button>
     </div>
 </div>
 {{/if}}
@@ -40,6 +45,21 @@
                     this.fire('change');
                 else
                     this.set({ multiline: true });
+            },
+            onSelect() {
+                const pipe = this.store.get('pipe');
+                pipe.fetch(
+                    'selectText',
+                    ({ type, data }) => {
+                        if (data && typeof data.text === 'string') {
+                            const item = this.get('item');
+                            item.value = data.text;
+                            this.set({ item });
+                        }
+                    },
+                    {},
+                    true
+                );
             }
         }
     };
